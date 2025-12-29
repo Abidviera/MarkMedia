@@ -1,0 +1,114 @@
+<div class="loading-overlay" id="loading-overlay">
+  <div class="loading-content">
+    <div class="logo-reveal-container">
+      <div class="glow-effect"></div>
+      <div class="logo-wrapper">
+        <div class="logo-mask"></div>
+        <img src="HERO/logo.png" alt="Mark Media Logo" class="logo-image" />
+      </div>
+    </div>
+
+    <div class="text-reveal-container">
+      <div class="company-name">
+        <span class="name-part">
+          <span class="char-wrapper"><span class="char">M</span></span>
+          <span class="char-wrapper"><span class="char">A</span></span>
+          <span class="char-wrapper"><span class="char">R</span></span>
+          <span class="char-wrapper"><span class="char">K</span></span>
+        </span>
+        <span class="name-part">
+          <span class="char-wrapper"><span class="char">M</span></span>
+          <span class="char-wrapper"><span class="char">E</span></span>
+          <span class="char-wrapper"><span class="char">D</span></span>
+          <span class="char-wrapper"><span class="char">I</span></span>
+          <span class="char-wrapper"><span class="char">A</span></span>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="scroll-container" id="scroll-container">
+  <div class="fixed-section" id="fixed-section">
+    <div class="fixed-container" id="fixed-container">
+      <div class="background-container" id="background-container">
+        <video
+          *ngFor="let section of sections; let i = index"
+          [id]="'background-video-' + i"
+          class="background-video"
+          [class.active]="i === 0"
+          [attr.poster]="section.posterUrl"
+          muted
+          loop
+          playsinline
+          preload="auto"
+        >
+          <source [src]="section.videoUrl" type="video/mp4" />
+        </video>
+      </div>
+
+      <div class="grid-container">
+        <div class="header">
+          <div class="header-row">Visual</div>
+          <div class="header-row">Stories</div>
+        </div>
+
+        <div class="content">
+          <div class="left-column" id="left-column">
+            <div
+              *ngFor="let section of sections; let i = index"
+              class="service"
+              [class.active]="i === 0"
+              [id]="'service-' + i"
+              [attr.data-index]="i"
+              (click)="navigateToSection(i)"
+              (mouseenter)="onItemHover()"
+            >
+              {{ section.service }}
+            </div>
+          </div>
+
+          <div class="featured" id="featured">
+            <div
+              *ngFor="let section of sections; let i = index"
+              class="featured-content"
+              [class.active]="i === 0"
+              [id]="'featured-' + i"
+              [attr.data-index]="i"
+            >
+              <h3>{{ section.featured }}</h3>
+            </div>
+          </div>
+
+          <div class="right-column" id="right-column">
+            <div
+              *ngFor="let section of sections; let i = index"
+              class="category"
+              [class.active]="i === 0"
+              [id]="'category-' + i"
+              [attr.data-index]="i"
+              (click)="navigateToSection(i)"
+              (mouseenter)="onItemHover()"
+            >
+              {{ section.category }}
+            </div>
+          </div>
+        </div>
+
+        <div class="footer" id="footer">
+          <div class="header-row">Capturing</div>
+          <div class="header-row">Excellence</div>
+          <div class="progress-indicator">
+            <div class="progress-numbers">
+              <span id="current-section">01</span>
+              <span id="total-sections">06</span>
+            </div>
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="end-section"></div>
+</div>

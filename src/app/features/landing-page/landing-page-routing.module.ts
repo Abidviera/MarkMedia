@@ -6,8 +6,8 @@ import { ServicesComponent } from './services/services.component';
 
 const routes: Routes = [
    {path: 'd', component:ContainerComponent },
-   {path: 's', component:HeroComponent },
-   {path: '', component:ServicesComponent },
+   {path: '', component:HeroComponent },
+   {path: 's', component:ServicesComponent },
 ];
 
 @NgModule({
