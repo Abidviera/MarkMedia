@@ -156,7 +156,9 @@ export class ContainerComponent  {
 
   ngOnInit(): void {
     if (!this.isBrowser) return;
+    
     this.initSoundManager();
+    
   }
 
   ngAfterViewInit(): void {
@@ -324,7 +326,7 @@ export class ContainerComponent  {
     this.soundManager = {
       sounds: {},
       isEnabled: false,
-      loadSound: (name: string, url: string, volume = 0.3) => {
+      loadSound: (name: string, url: string, volume = 1) => {
         const audio = new Audio(url);
         audio.preload = 'auto';
         audio.volume = volume;
@@ -350,9 +352,9 @@ export class ContainerComponent  {
       }
     };
 
-    this.soundManager.loadSound('hover', 'https://assets.codepen.io/7558/click-reverb-001.mp3', 0.15);
-    this.soundManager.loadSound('click', 'https://assets.codepen.io/7558/shutter-fx-001.mp3', 0.3);
-    this.soundManager.loadSound('textChange', 'https://assets.codepen.io/7558/whoosh-fx-001.mp3', 0.3);
+    this.soundManager.loadSound('hover', 'https://assets.codepen.io/7558/click-reverb-001.mp3', 1);
+    this.soundManager.loadSound('click', 'https://assets.codepen.io/7558/shutter-fx-001.mp3', 1);
+    this.soundManager.loadSound('textChange', 'https://assets.codepen.io/7558/whoosh-fx-001.mp3', 1);
   }
 
   private initLenis(): void {
