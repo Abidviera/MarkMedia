@@ -1,0 +1,150 @@
+<!-- Header and Navigation -->
+<header class="site-header">
+  <div class="grid-container">
+    <!-- Logo with circles only -->
+    <div class="logo-container">
+      <div class="logo-circles">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+      </div>
+    </div>
+
+    <nav class="main-nav">
+      <ul>
+        <li><a href="#" class="active">SELECTED WORKS<sup>10</sup></a></li>
+        <li><a href="#">ABOUT</a></li>
+        <li><a href="#">JOURNAL</a></li>
+      </ul>
+    </nav>
+
+    <div class="contact-link">
+      <a href="mailto:hi@filip.fyi">+GET IN TOUCH</a>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="grid-container">
+    <!-- Header Logo - Changed to Text -->
+    <div class="header-logo">
+      <div class="logo-text">
+        <span class="logo-letter">M</span>
+        <span class="logo-letter">A</span>
+        <span class="logo-letter">R</span>
+        <span class="logo-letter">K</span>
+        <span class="logo-space"></span>
+        <span class="logo-letter">M</span>
+        <span class="logo-letter">E</span>
+        <span class="logo-letter">D</span>
+        <span class="logo-letter">I</span>
+        <span class="logo-letter">A</span>
+      </div>
+    </div>
+
+    <div class="header">
+      <div class="header-title">
+        <h1>SELECTED WORKS<sup>10</sup></h1>
+      </div>
+      <div class="view-toggle">
+        <button 
+          class="toggle-btn" 
+          [class.active]="currentView === 'list'"
+          (click)="toggleView('list')">
+          List
+        </button>
+        <button 
+          class="toggle-btn" 
+          [class.active]="currentView === 'grid'"
+          (click)="toggleView('grid')">
+          Grid
+        </button>
+      </div>
+    </div>
+
+    <div id="projects-container" class="projects-container" [class.list-view]="currentView === 'list'" [class.grid-view]="currentView === 'grid'">
+      <div *ngFor="let project of projects" class="project-item" [attr.data-id]="project.id">
+        <div class="project-image-container">
+          <img class="project-image" [src]="project.image" [alt]="project.title" crossorigin="anonymous">
+        </div>
+        <div class="project-title">{{ project.title }}</div>
+        <div class="project-year">{{ project.year }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Popup Overlay for Image Preview -->
+<div id="popup-overlay">
+  <div class="popup-content">
+    <img class="popup-image" [src]="popupImageSrc" alt="Popup Image">
+  </div>
+</div>
+
+<!-- Footer Section -->
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-header">
+      <h2>
+        <span class="light-text">Find the essence in simplicity,</span>
+        <span class="bold-text">Create without boundaries.</span>
+      </h2>
+    </div>
+
+    <div class="footer-grid">
+      <div class="footer-column">
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p><a href="mailto:hi@filip.fyi">hi&#64;filip.fyi</a></p>
+          <p><a href="tel:+381631943959">+381.63.TARA.959</a></p>
+        </div>
+
+        <div class="footer-section">
+          <h3>&nbsp;</h3>
+          <p>&nbsp;</p>
+        </div>
+      </div>
+
+      <div class="footer-column">
+        <div class="footer-section">
+          <p><a href="#">Sound</a></p>
+          <p><a href="#">Vision</a></p>
+          <p><a href="#">Feeling</a></p>
+        </div>
+
+        <div class="footer-section">
+          <h3>Fragments</h3>
+          <p>Receive Signals</p>
+        </div>
+      </div>
+
+      <div class="footer-column">
+        <div class="footer-section">
+          <p><a href="#">Works<sup>(10)</sup></a></p>
+          <p><a href="#">About</a></p>
+          <p><a href="#">Journal</a></p>
+        </div>
+
+        <div class="footer-section">
+          <h3>Location</h3>
+          <p>43.9359° N, 19.4959° E</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Logo - Changed to Text -->
+    <div class="footer-logo">
+      <div class="logo-text">
+        <span class="logo-letter">M</span>
+        <span class="logo-letter">A</span>
+        <span class="logo-letter">R</span>
+        <span class="logo-letter">K</span>
+        <span class="logo-space"></span>
+        <span class="logo-letter">M</span>
+        <span class="logo-letter">E</span>
+        <span class="logo-letter">D</span>
+        <span class="logo-letter">I</span>
+        <span class="logo-letter">A</span>
+      </div>
+    </div>
+  </div>
+</footer>

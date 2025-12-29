@@ -1,3 +1,13 @@
+<app-navbar></app-navbar>
+
+<app-services-detail
+  *ngIf="isDetailOpen"
+  [isOpen]="isDetailOpen"
+  [detailData]="selectedDetail"
+  (closeDetail)="closeGalleryDetail()"
+>
+</app-services-detail>
+
 <div class="loading-overlay" id="loading-overlay">
   <div class="loading-content">
     <div class="logo-reveal-container">
@@ -28,7 +38,7 @@
   </div>
 </div>
 
-<div class="scroll-container" id="scroll-container">
+<div class="scroll-container" id="scroll-container home">
   <div class="fixed-section" id="fixed-section">
     <div class="fixed-container" id="fixed-container">
       <div class="background-container" id="background-container">
@@ -49,8 +59,23 @@
 
       <div class="grid-container">
         <div class="header">
-          <div class="header-row">Visual</div>
-          <div class="header-row">Stories</div>
+          <div class="header-row">
+            <span class="header-letter">V</span>
+            <span class="header-letter">I</span>
+            <span class="header-letter">S</span>
+            <span class="header-letter">U</span>
+            <span class="header-letter">A</span>
+            <span class="header-letter">L</span>
+          </div>
+          <div class="header-row">
+            <span class="header-letter">S</span>
+            <span class="header-letter">T</span>
+            <span class="header-letter">O</span>
+            <span class="header-letter">R</span>
+            <span class="header-letter">I</span>
+            <span class="header-letter">E</span>
+            <span class="header-letter">S</span>
+          </div>
         </div>
 
         <div class="content">
@@ -96,8 +121,29 @@
         </div>
 
         <div class="footer" id="footer">
-          <div class="header-row">Capturing</div>
-          <div class="header-row">Excellence</div>
+          <div class="header-row">
+            <span class="footer-letter">C</span>
+            <span class="footer-letter">A</span>
+            <span class="footer-letter">P</span>
+            <span class="footer-letter">T</span>
+            <span class="footer-letter">U</span>
+            <span class="footer-letter">R</span>
+            <span class="footer-letter">I</span>
+            <span class="footer-letter">N</span>
+            <span class="footer-letter">G</span>
+          </div>
+          <div class="header-row">
+            <span class="footer-letter">E</span>
+            <span class="footer-letter">X</span>
+            <span class="footer-letter">C</span>
+            <span class="footer-letter">E</span>
+            <span class="footer-letter">L</span>
+            <span class="footer-letter">L</span>
+            <span class="footer-letter">E</span>
+            <span class="footer-letter">N</span>
+            <span class="footer-letter">C</span>
+            <span class="footer-letter">E</span>
+          </div>
           <div class="progress-indicator">
             <div class="progress-numbers">
               <span id="current-section">01</span>
@@ -110,7 +156,7 @@
     </div>
   </div>
 
-  <div class="end-section">
+  <div class="end-section" id="about">
     <div class="about-container">
       <div class="about-bg-elements">
         <div class="bg-circle circle-1"></div>
@@ -150,35 +196,36 @@
 
         <div class="about-stats" data-scroll>
           <div class="stat-item">
-            <div class="stat-number" data-target="500">12</div>
+            <div class="stat-number" data-target="500">500+</div>
             <div class="stat-label">Projects Completed</div>
           </div>
           <div class="stat-divider"></div>
           <div class="stat-item">
-            <div class="stat-number" data-target="10">24</div>
+            <div class="stat-number" data-target="10">10+</div>
             <div class="stat-label">Years Experience</div>
           </div>
           <div class="stat-divider"></div>
           <div class="stat-item">
-            <div class="stat-number" data-target="100">44</div>
+            <div class="stat-number" data-target="100">450+</div>
             <div class="stat-label">Happy Clients</div>
           </div>
           <div class="stat-divider"></div>
           <div class="stat-item">
-            <div class="stat-number" data-target="15">3</div>
+            <div class="stat-number" data-target="15">15+</div>
             <div class="stat-label">Team Members</div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="services-container">
+
+  <div class="services-container" id="services">
     <section class="portfolio-intro" data-scroll data-scroll-speed="1">
       <div class="intro-content">
         <h2>
           <span>Our</span>
           <span>Services</span>
-          <span>& Expertise</span>
+          <span style="color: #b91c1c">& Expertise</span>
         </h2>
         <p class="intro-description">
           From dynamic event coverage and medical documentation to stunning
@@ -190,19 +237,37 @@
       </div>
     </section>
 
-    <section class="gallery-section" id="galleryPin">
+    <section class="gallery-section" id="gallery galleryPin">
       <div class="gallery-pin-wrap">
-        <div class="gallery-item" *ngFor="let item of galleryItems">
-          <img [src]="item.image" [alt]="item.title" />
-          <div class="gallery-overlay">
-            <div class="gallery-category">{{ item.category }}</div>
-            <div class="gallery-title">{{ item.title }}</div>
+        <div
+          class="gallery-item"
+          *ngFor="let item of galleryItems"
+          (click)="openGalleryDetail(item)"
+        >
+          <div class="gallery-item-inner">
+            <img [src]="item.image" [alt]="item.title" />
+
+            <div class="gallery-overlay">
+              <div class="gallery-category">{{ item.category }}</div>
+              <div class="gallery-title">{{ item.title }}</div>
+              <div class="gallery-cta">
+                <span>View Details</span>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path
+                    d="M4 10H16M16 10L10 4M16 10L10 16"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="portfolio-cta">
+    <section class="portfolio-cta" id="contact">
       <div class="cta-content">
         <h4>Ready to Start Your Project?</h4>
         <p>
@@ -210,7 +275,7 @@
           event, intimate portrait session, or commercial campaign, we're here
           to deliver exceptional results.
         </p>
-        <a href="#contact" class="cta-button"> Get In Touch </a>
+        <a href="mailto:info@markmedia.ae" class="cta-button"> Get In Touch </a>
       </div>
       <div class="cta-credits">
         <p>

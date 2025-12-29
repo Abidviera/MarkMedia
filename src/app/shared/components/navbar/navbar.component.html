@@ -1,0 +1,70 @@
+<nav class="navbar-container" [class.scrolled]="isScrolled">
+  <div class="navbar-content">
+    <!-- Logo -->
+    <div class="navbar-logo">
+      <img src="HERO/logo.png" alt="Mark Media" class="logo-img" />
+      <span class="logo-text">MARK MEDIA</span>
+    </div>
+
+    <!-- Desktop Navigation -->
+    <ul class="nav-menu desktop-menu">
+      <li class="nav-item" *ngFor="let item of navItems">
+        <a [href]="item.link" (click)="scrollToSection(item.link); $event.preventDefault()" class="nav-link">
+          <span class="nav-label">{{ item.label }}</span>
+          <span class="nav-underline"></span>
+        </a>
+      </li>
+    </ul>
+
+    <!-- CTA Button -->
+    <div class="navbar-cta desktop-only">
+      <button class="cta-button" (click)="scrollToSection('#contact')">
+        <span>Get Started</span>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M1 8H15M15 8L8 1M15 8L8 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-button" (click)="toggleMenu()" [class.active]="isMenuOpen">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+  </div>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-menu" [class.open]="isMenuOpen">
+    <div class="mobile-menu-content">
+      <div class="mobile-menu-header">
+        <img src="HERO/logo.png" alt="Mark Media" class="mobile-logo" />
+        <button class="close-button" (click)="closeMenu()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      
+      <ul class="mobile-menu-list">
+        <li class="mobile-menu-item" *ngFor="let item of navItems; let i = index">
+          <a [href]="item.link" (click)="scrollToSection(item.link); $event.preventDefault()" class="mobile-menu-link">
+            <span class="item-number">0{{ i + 1 }}</span>
+            <span class="item-label">{{ item.label }}</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="mobile-menu-footer">
+        <button class="mobile-cta-button" (click)="scrollToSection('#contact')">
+          Get In Touch
+        </button>
+        <div class="mobile-social">
+          <a href="#" class="social-link">Instagram</a>
+          <a href="#" class="social-link">Facebook</a>
+          <a href="#" class="social-link">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

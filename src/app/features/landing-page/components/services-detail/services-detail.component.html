@@ -1,0 +1,98 @@
+<div class="detail-overlay" *ngIf="isOpen && detailData" (click)="close()">
+  <div class="detail-container" (click)="$event.stopPropagation()">
+ 
+    <div id="three-canvas-container" class="three-canvas"></div>
+
+ 
+    <button class="close-btn" (click)="close()">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <path d="M24 8L8 24M8 8L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+ 
+    <div class="detail-content">
+   
+      <div class="detail-header">
+        <div class="category-badge">{{ detailData.category }}</div>
+        <h1 class="detail-title">{{ detailData.title }}</h1>
+        <p class="detail-subtitle">{{ detailData.description }}</p>
+      </div>
+
+ 
+      <div class="detail-main-image">
+        <div class="image-wrapper">
+          <img [src]="detailData.image" [alt]="detailData.title" />
+          <div class="image-overlay"></div>
+        </div>
+      </div>
+
+ 
+      <div class="detail-content-section description-section">
+        <h2 class="section-title">
+          <span class="title-decoration"></span>
+          About This Service
+        </h2>
+        <p class="long-description">{{ detailData.longDescription }}</p>
+      </div>
+
+   
+      <div class="detail-content-section stats-section">
+        <div class="stats-grid">
+          <div class="stat-card" *ngFor="let stat of detailData.stats">
+            <div class="stat-value">{{ stat.value }}</div>
+            <div class="stat-label">{{ stat.label }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-content-section features-section">
+        <h2 class="section-title">
+          <span class="title-decoration"></span>
+          Key Features
+        </h2>
+        <div class="features-grid">
+          <div class="feature-item" *ngFor="let feature of detailData.features; let i = index">
+            <div class="feature-number">{{ (i + 1).toString().padStart(2, '0') }}</div>
+            <div class="feature-text">{{ feature }}</div>
+          </div>
+        </div>
+      </div>
+
+    
+      <div class="detail-content-section works-section">
+        <h2 class="section-title">
+          <span class="title-decoration"></span>
+          Completed Projects
+        </h2>
+        <div class="works-grid">
+          <div class="work-card" *ngFor="let work of detailData.completedWorks">
+            <div class="work-image-wrapper">
+              <img [src]="work.image" [alt]="work.title" />
+              <div class="work-hover-overlay">
+                <div class="work-info">
+                  <h3>{{ work.title }}</h3>
+                  <p>{{ work.description }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="detail-content-section cta-section">
+        <div class="cta-box">
+          <h3>Interested in This Service?</h3>
+          <p>Let's discuss how we can bring your vision to life with our expertise.</p>
+          <button class="detail-cta-button">
+            <span>Start Your Project</span>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

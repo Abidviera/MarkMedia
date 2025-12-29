@@ -39,15 +39,17 @@
               }
             ],
             "styles": [
-               "src/styles.scss",
+              "src/styles.scss",
               "node_modules/dat.gui/build/dat.gui.css",
               "node_modules/locomotive-scroll/dist/locomotive-scroll.css"
             ],
             "scripts": [
-                 "node_modules/gsap/dist/gsap.min.js",
+              "node_modules/gsap/dist/gsap.min.js",
               "node_modules/gsap/dist/ScrollTrigger.min.js",
               "node_modules/gsap/dist/SplitText.min.js",
-              "node_modules/dat.gui/build/dat.gui.min.js"
+              "node_modules/gsap/dist/Flip.min.js",
+              "node_modules/dat.gui/build/dat.gui.min.js",
+              "node_modules/gsap/dist/CustomEase.min.js"
             ],
             "server": "src/main.server.ts",
             "outputMode": "server",
@@ -110,14 +112,16 @@
               }
             ],
             "styles": [
-               "src/styles.scss",
-  "node_modules/dat.gui/build/dat.gui.css",
-  "node_modules/locomotive-scroll/dist/locomotive-scroll.css"
+              "src/styles.scss",
+              "node_modules/dat.gui/build/dat.gui.css",
+              "node_modules/locomotive-scroll/dist/locomotive-scroll.css"
             ],
             "scripts": [
-               "node_modules/gsap/dist/gsap.min.js",
-  "node_modules/gsap/dist/ScrollTrigger.min.js",
-  "node_modules/gsap/dist/SplitText.min.js"
+              "node_modules/gsap/dist/gsap.min.js",
+              "node_modules/gsap/dist/ScrollTrigger.min.js",
+              "node_modules/gsap/dist/SplitText.min.js",
+              "node_modules/gsap/dist/Flip.min.js",
+              "node_modules/gsap/dist/CustomEase.min.js"
             ]
           }
         }
