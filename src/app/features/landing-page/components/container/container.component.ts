@@ -495,7 +495,7 @@ export class ContainerComponent  {
       }
     });
 
-    // Transition from hero to services section
+
     ScrollTrigger.create({
       trigger: '.end-section',
       start: 'top center',
