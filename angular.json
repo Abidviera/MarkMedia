@@ -40,7 +40,8 @@
             ],
             "styles": [
                "src/styles.scss",
-              "node_modules/dat.gui/build/dat.gui.css"
+              "node_modules/dat.gui/build/dat.gui.css",
+              "node_modules/locomotive-scroll/dist/locomotive-scroll.css"
             ],
             "scripts": [
                  "node_modules/gsap/dist/gsap.min.js",
@@ -109,7 +110,9 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+               "src/styles.scss",
+  "node_modules/dat.gui/build/dat.gui.css",
+  "node_modules/locomotive-scroll/dist/locomotive-scroll.css"
             ],
             "scripts": [
                "node_modules/gsap/dist/gsap.min.js",
