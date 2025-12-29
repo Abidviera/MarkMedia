@@ -39,9 +39,15 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+               "src/styles.scss",
+              "node_modules/dat.gui/build/dat.gui.css"
             ],
-            "scripts": [],
+            "scripts": [
+                 "node_modules/gsap/dist/gsap.min.js",
+              "node_modules/gsap/dist/ScrollTrigger.min.js",
+              "node_modules/gsap/dist/SplitText.min.js",
+              "node_modules/dat.gui/build/dat.gui.min.js"
+            ],
             "server": "src/main.server.ts",
             "outputMode": "server",
             "ssr": {
@@ -105,10 +111,17 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+               "node_modules/gsap/dist/gsap.min.js",
+  "node_modules/gsap/dist/ScrollTrigger.min.js",
+  "node_modules/gsap/dist/SplitText.min.js"
+            ]
           }
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "29497fea-7058-4320-a885-25ab8364d06b"
   }
 }
