@@ -45,42 +45,42 @@ export class ServicesComponent {
       service: 'Events', 
       featured: 'Captured Moments', 
       category: 'Exhibitions',
-      videoUrl: 'exhibition.mp4',
-      posterUrl: 'event.jpg'
+      videoUrl: 'HERO/exhibition.mp4',
+      posterUrl: 'HERO/event.jpg'
     },
     { 
       service: 'Hospital', 
       featured: 'Medical Excellence', 
       category: 'Hospital',
-      videoUrl: 'hospital.mp4',
+      videoUrl: 'HERO/hospital.mp4',
       posterUrl: 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=1920&q=80'
     },
     { 
       service: 'Fashion', 
       featured: 'Style Stories', 
       category: 'Modeling',
-      videoUrl: 'fashion.mp4',
+      videoUrl: 'HERO/fashion.mp4',
       posterUrl: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=1920&q=80'
     },
     { 
       service: 'Sports', 
       featured: 'Action Shots', 
       category: 'Athletics',
-      videoUrl: 'F1.mp4',
+      videoUrl: 'HERO/F1.mp4',
       posterUrl: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1920&q=80'
     },
     { 
       service: 'Product', 
       featured: 'Commercial Vision', 
       category: 'Advertisement',
-      videoUrl: 'advertisement.mp4',
+      videoUrl: 'HERO/advertisement.mp4',
       posterUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1920&q=80'
     },
     { 
       service: 'Weddings', 
       featured: 'Love Stories', 
       category: 'Celebrations',
-      videoUrl: 'Wedding.mp4',
+      videoUrl: 'HERO/Wedding.mp4',
       posterUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&q=80'
     }
   ];
