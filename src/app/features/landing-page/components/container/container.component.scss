@@ -1,4 +1,3 @@
-// Import the original styles from the user's code
 :host {
   display: block;
   width: 100%;
@@ -36,7 +35,6 @@
   z-index: 1;
 }
 
-/* Animated Background Elements */
 .about-bg-elements {
   position: absolute;
   top: 0;
@@ -98,17 +96,14 @@
   opacity: 0.5;
 }
 
-
 .about-content {
   position: relative;
   z-index: 2;
 }
 
-
 .about-logo-section {
   text-align: center;
   margin-bottom: 3rem;
- 
 }
 
 @keyframes logoReveal {
@@ -124,7 +119,6 @@
   filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.1));
 }
 
-/* Company Title */
 .about-title {
   text-align: center;
   margin-bottom: 2rem;
@@ -170,13 +164,9 @@
   }
 }
 
-/* Tagline */
 .about-tagline {
   text-align: center;
   margin-bottom: 4rem;
-  // opacity: 0;
-  // transform: translateY(20px);
-  // animation: fadeInUp 0.8s ease forwards 1s;
 }
 
 .about-tagline p {
@@ -195,14 +185,10 @@
   }
 }
 
-/* Description */
 .about-description {
   max-width: 900px;
   margin: 0 auto 6rem;
   text-align: center;
-  // opacity: 0;
-  // transform: translateY(30px);
-  // animation: fadeInUp 1s ease forwards 1.2s;
 }
 
 .desc-main {
@@ -222,7 +208,6 @@
   margin: 0;
 }
 
-/* Stats Section */
 .about-stats {
   display: flex;
   align-items: center;
@@ -231,9 +216,6 @@
   margin-bottom: 6rem;
   padding: 3rem 2rem;
   border-radius: 16px;
-  // opacity: 0;
-  // transform: translateY(40px);
-  // animation: fadeInUp 1s ease forwards 1.6s;
 }
 
 .stat-item {
@@ -743,8 +725,6 @@
   transform: translateY(20px);
 }
 
-
-
 .services-container {
   background: #0a0a0a;
   color: #f5f5f5;
@@ -879,7 +859,6 @@
   }
 }
 
-
 .gallery-item-inner {
   position: relative;
   width: 100%;
@@ -888,10 +867,9 @@
   overflow: hidden;
   background: #1a1a1a;
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -899,8 +877,7 @@
     bottom: 0;
     border-radius: 16px;
     padding: 2px;
-    -webkit-mask: 
-      linear-gradient(#fff 0 0) content-box, 
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
       linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -1036,7 +1013,6 @@
   }
 }
 
-// Click state animation
 .gallery-item:active .gallery-item-inner {
   transform: translateY(-12px) scale(0.98);
 }
@@ -1132,7 +1108,7 @@
     flex-direction: column;
     gap: 5vh;
     padding: 0 1rem;
- 
+
     justify-content: center;
     transform: translateY(-65%);
   }
@@ -1142,17 +1118,17 @@
   .featured {
     width: 100%;
     text-align: center;
-     word-wrap: break-word;
+    word-wrap: break-word;
     overflow-wrap: break-word;
   }
 
   .featured {
     font-size: 3vw;
     margin-bottom: 0vh;
-     height: 5vh;
+    height: 5vh;
   }
 
-   .left-column {
+  .left-column {
     font-size: 4vw;
   }
 
@@ -1192,7 +1168,6 @@
   }
 }
 
-
 .split-parent {
   overflow: hidden;
   display: block;
@@ -1203,25 +1178,21 @@
   will-change: transform;
 }
 
-// Prevent text shifting during animation
 [data-splitting] {
   display: block;
 }
 
-// Character spacing for smoother animations
 .split-char {
   display: inline-block;
   will-change: transform, opacity;
 }
 
-// Word wrapping
 .split-word {
   display: inline-block;
   white-space: nowrap;
   will-change: transform, opacity;
 }
 
-// Line wrapping with proper overflow
 .split-line {
   display: block;
   overflow: hidden;
