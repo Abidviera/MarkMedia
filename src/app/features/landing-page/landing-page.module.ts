@@ -10,6 +10,7 @@ import { ProjectsComponent } from './components/projects/projects.component';
 import { ServicesDetailComponent } from './components/services-detail/services-detail.component';
 import { SharedModule } from '../../shared/shared.module';
 import { TestimonialsComponent } from './components/testimonials/testimonials.component';
+import { GalleryComponent } from './components/gallery/gallery.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { TestimonialsComponent } from './components/testimonials/testimonials.co
     ProjectsComponent,
     ServicesDetailComponent,
     TestimonialsComponent,
+    GalleryComponent,
   ],
   imports: [CommonModule, LandingPageRoutingModule, FormsModule, SharedModule],
 })

@@ -1,0 +1,356 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500&display=swap");
+
+@font-face {
+  font-family: "wild_worldbold";
+  src: url("https://assets.codepen.io/756881/wild_world-webfont.woff2") format("woff2"),
+    url("https://assets.codepen.io/756881/wild_world-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+:host {
+  display: block;
+  background-color: #111;
+  font-family: "Open Sans", sans-serif;
+  color: white;
+  font-weight: 300;
+  font-size: 18px;
+}
+
+@media screen and (min-width: 320px) {
+  :host {
+    font-size: calc(18px + (20 - 18) * ((100vw - 320px) / (1140 - 320)));
+  }
+}
+
+@media screen and (min-width: 1140px) {
+  :host {
+    font-size: 20px;
+  }
+}
+
+section {
+  min-height: 100vh;
+}
+
+p {
+  line-height: 1.35;
+}
+
+#content {
+  padding: 0 0.75rem;
+  overflow: visible;
+  width: 100%;
+  background-color: #111;
+  font-family: "Open Sans", sans-serif;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 0.5rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+.flow--lg > * + * {
+  margin-top: 2em;
+}
+
+.flow > * + * {
+  margin-top: 1em;
+}
+
+.title {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  min-height: 50vh;
+}
+
+.heading {
+  position: absolute;
+  top: 50vh;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+}
+
+h1 {
+  font-size: clamp(12px, 8vw, 100px);
+  text-align: center;
+  line-height: 0.67;
+  margin: 0 auto;
+  font-family: "wild_worldbold";
+}
+
+h1 .eyebrow {
+  font-family: "Open sans", sans-serif;
+  font-size: clamp(12px, 3vw, 40px);
+  font-weight: 400;
+}
+
+.heading p {
+  font-family: "wild_worldbold";
+  font-size: 15.5vw;
+  font-size: clamp(12px, 15.5vw, 250px);
+  text-align: center;
+  line-height: 0.67;
+  margin: 0;
+  text-align: center;
+  color: #111;
+  -webkit-text-stroke-width: 1.5px;
+  -webkit-text-stroke-color: white;
+  z-index: -10;
+}
+
+.intro,
+h2,
+h3 {
+  font-weight: 500;
+  font-size: 20px;
+}
+
+@media screen and (min-width: 320px) {
+  .intro,
+  h2,
+  h3 {
+    font-size: calc(20px + (24 - 20) * ((100vw - 320px) / (1140 - 320)));
+  }
+}
+
+@media screen and (min-width: 1140px) {
+  .intro,
+  h2,
+  h3 {
+    font-size: 24px;
+  }
+}
+
+.text-container {
+  position: relative;
+}
+
+.text-container p {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  color: transparent;
+}
+
+.text-container p:first-child {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  color: white;
+}
+
+.image-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-column-gap: 0.2rem;
+  grid-row-gap: 0.2rem;
+  width: 70vw;
+  margin: 0 auto;
+  padding-top: 40vh;
+  z-index: -1;
+}
+
+.image-grid .image_cont {
+  position: relative;
+  aspect-ratio: 1/1;
+  overflow: hidden;
+}
+
+.image-grid img {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 150%;
+  object-fit: cover;
+}
+
+.image-grid .image_cont:nth-child(1) {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.image-grid .image_cont:nth-child(2) {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.image-grid .image_cont:nth-child(3) {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.parallax-images {
+  margin-top: 10vh;
+  padding: 10rem 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-column-gap: 1rem;
+  grid-row-gap: 20vh;
+  align-items: center;
+  justify-items: center;
+}
+
+.parallax-images .image_cont {
+  position: relative;
+  height: 80vh;
+  overflow: hidden;
+}
+
+.parallax-images img {
+  position: absolute;
+  bottom: 0;
+  margin: 0 auto;
+  height: 140%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.parallax-images .parallax-text {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.parallax-images .image_cont:nth-child(2) {
+  grid-column: 1 / span 1;
+  grid-row: 1;
+  width: 100%;
+}
+
+.parallax-images .image_cont:nth-child(3) {
+  grid-column: 2 / span 1;
+  grid-row: 2;
+}
+
+.spacer {
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stagger {
+  font-size: 8vw;
+}
+
+.bars {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 4rem;
+}
+
+.bars .bars-text {
+  flex: 1 1 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.bars .bars-cont {
+  flex: 1 1 500px;
+  display: flex;
+  width: 100%;
+  height: 60vh;
+  align-items: flex-end;
+}
+
+.bars .bar {
+  border-radius: 10px;
+  margin: 2vw;
+  text-align: center;
+  flex: 1 0 auto;
+  font-size: 18px;
+  justify-self: flex-end;
+  font-family: "wild_worldbold";
+  font-size: clamp(16px, 3vw, 36px);
+}
+
+@media screen and (min-width: 320px) {
+  .bars .bar {
+    font-size: calc(18px + (20 - 18) * ((100vw - 320px) / (1140 - 320)));
+  }
+}
+
+@media screen and (min-width: 1140px) {
+  .bars .bar {
+    font-size: 20px;
+  }
+}
+
+.content {
+  border-left: solid 1px white;
+  padding: 0.5rem 2rem;
+}
+
+.staggered {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 4rem;
+}
+
+.staggered h3 {
+  font-family: "wild_worldbold";
+  font-size: clamp(16px, 6vw, 80px);
+  letter-spacing: 0.03em;
+}
+
+.staggered_text {
+  flex: 1 1 300px;
+}
+
+.staggered_demo {
+  flex: 1 1 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.parallax-slab {
+  position: relative;
+  height: 500px;
+  width: 100%;
+  max-height: 500px;
+  overflow: hidden;
+}
+
+.parallax-slab img {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 180%;
+  object-fit: cover;
+}
+
+.v-center {
+  display: flex;
+  align-items: center;
+}
+
+.spacer {
+  height: 10vh;
+}

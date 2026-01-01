@@ -1,0 +1,49 @@
+<div class="loader df aic jcc" [class.hidden]="isLoaded">
+  <div>
+    <h1>Capturing Moments</h1>
+    <h2 class="loader--text">{{ loadProgress }}%</h2>
+  </div>
+</div>
+
+<div class="demo-wrapper">
+  <header class="df aic jcc">
+    <div>
+      <h1>Visual Stories</h1>
+      <h2>Photography Portfolio</h2>
+    </div>
+  </header>
+
+  <section class="demo-text">
+    <div class="wrapper text">
+      LIGHT • SHADOW • PERSPECTIVE • MOMENT
+    </div>
+  </section>
+
+  <section 
+    class="demo-gallery" 
+    *ngFor="let gallery of galleries; let i = index"
+    [style.height.px]="gallery.rowHeight">
+    <ul class="wrapper">
+      <li *ngFor="let image of gallery.images">
+        <img 
+          [src]="image.src" 
+          [attr.width]="image.width" 
+          [attr.height]="image.height"
+          (load)="onImageLoad()"
+          (error)="onImageLoad()"
+          alt="Photography showcase"
+        />
+      </li>
+    </ul>
+  </section>
+
+  <section class="demo-text">
+    <div class="wrapper text">
+      COMPOSE • CAPTURE • CREATE • TELL
+    </div>
+  </section>
+
+  <footer class="df aic jcc">
+    <p>Through The Lens | <a href="https://pexels.com/" target="_blank" rel="noopener">Image Credits</a></p>
+  </footer>
+</div>
