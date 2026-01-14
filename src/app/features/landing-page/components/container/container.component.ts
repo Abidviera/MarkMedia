@@ -9,12 +9,23 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import Lenis from 'lenis';
 
-declare var gsap: any;
-declare var ScrollTrigger: any;
-declare var SplitText: any;
+// Interface definitions
+interface GalleryImage {
+  src: string;
+  width: number;
+  height: number;
+}
+
+interface GallerySection {
+  images: GalleryImage[];
+  rowHeight: number;
+}
 
 interface SplitTextInstance {
   words: HTMLElement[];
+  chars?: HTMLElement[];
+  lines?: HTMLElement[];
+  revert?: () => void;
 }
 
 interface VideoSection {
@@ -48,6 +59,10 @@ interface GalleryDetailData {
   }[];
   features: string[];
 }
+
+declare const gsap: any;
+declare const ScrollTrigger: any;
+declare const SplitText: any;
 @Component({
   selector: 'app-container',
   standalone: false,
@@ -70,8 +85,41 @@ export class ContainerComponent {
   private videosLoaded = 0;
   private totalVideos = 6;
   private textAnimations: any[] = [];
+  
+  // Gallery related properties
+  private w = 1240;
+  galleries: GallerySection[] = [];
+  loadProgress = 0;
+  isLoaded = false;
+  private totalImages = 0;
+  private loadedImages = 0;
+  
+  // Unified loader state
+  private totalAssetsToLoad = 0;
+  private loadedAssets = 0;
+  
+  // UI states
   isDetailOpen = false;
   selectedDetail: GalleryDetailData | null = null;
+
+  private rowHeights = [600, 800, 700, 900];
+  private galleryImages: string[] = [
+    'https://images.pexels.com/photos/1366919/pexels-photo-1366919.jpeg',
+    'https://images.pexels.com/photos/1144176/pexels-photo-1144176.jpeg',
+    'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg', 
+    'https://images.pexels.com/photos/1166209/pexels-photo-1166209.jpeg', 
+    'https://images.pexels.com/photos/1252869/pexels-photo-1252869.jpeg', 
+    'https://images.pexels.com/photos/1432675/pexels-photo-1432675.jpeg', 
+    'https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg', 
+    'https://images.pexels.com/photos/1687845/pexels-photo-1687845.jpeg', 
+    'https://images.pexels.com/photos/2531709/pexels-photo-2531709.jpeg', 
+    'https://images.pexels.com/photos/1cosmos74/pexels-photo-1cosmos74.jpeg', 
+    'https://images.pexels.com/photos/1761279/pexels-photo-1761279.jpeg', 
+    'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg',
+    'https://images.pexels.com/photos/1366630/pexels-photo-1366630.jpeg', 
+    'https://images.pexels.com/photos/1320686/pexels-photo-1320686.jpeg', 
+    'https://images.pexels.com/photos/1231265/pexels-photo-1231265.jpeg', 
+  ];
 
   private setupTextRevealAnimations(): void {
     if (typeof gsap === 'undefined' || typeof SplitText === 'undefined') return;
@@ -1092,10 +1140,17 @@ export class ContainerComponent {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
-  ngOnInit(): void {
+ ngOnInit(): void {
     if (!this.isBrowser) return;
 
     this.initSoundManager();
+    this.distributeImagesIntoGalleries();
+    
+    this.totalAssetsToLoad = this.totalVideos + this.totalImages;
+    
+    if (this.isBrowser) {
+      document.body.style.overflow = 'hidden';
+    }
   }
 
   ngAfterViewInit(): void {
@@ -1124,24 +1179,31 @@ export class ContainerComponent {
 
     if (this.lenis) {
       this.lenis.destroy();
+      this.lenis = null;
     }
+    
     if (this.mainScrollTrigger) {
       this.mainScrollTrigger.kill();
     }
+    
     if (typeof ScrollTrigger !== 'undefined') {
       ScrollTrigger.getAll().forEach((trigger: any) => trigger.kill());
     }
+    
+    if (this.isBrowser) {
+      document.body.style.overflow = '';
+    }
   }
 
+ 
   openGalleryDetail(item: GalleryItem): void {
     const detailData = this.galleryDetailsData[item.title];
-
     if (detailData) {
       this.selectedDetail = detailData;
       this.isDetailOpen = true;
-    } else {
     }
   }
+
   closeGalleryDetail(): void {
     this.isDetailOpen = false;
     setTimeout(() => {
@@ -1149,10 +1211,9 @@ export class ContainerComponent {
     }, 500);
   }
 
-  private preloadVideos(): void {
+private preloadVideos(): void {
     const loadingCounter = document.getElementById('loading-counter');
-    let loadedCount = 0;
-
+    
     this.sections.forEach((section, index) => {
       const video = document.getElementById(
         `background-video-${index}`
@@ -1167,16 +1228,11 @@ export class ContainerComponent {
       video.loop = true;
 
       const onCanPlay = () => {
-        loadedCount++;
-        const progress = Math.floor((loadedCount / this.totalVideos) * 100);
+        this.onAssetLoaded();
+        
+        const progress = Math.floor((this.loadedAssets * 100) / this.totalAssetsToLoad);
         if (loadingCounter) {
-          loadingCounter.textContent = `[${progress
-            .toString()
-            .padStart(2, '0')}]`;
-        }
-
-        if (loadedCount === this.totalVideos) {
-          this.onAllVideosLoaded();
+          loadingCounter.textContent = `[${progress.toString().padStart(2, '0')}]`;
         }
 
         video.removeEventListener('canplaythrough', onCanPlay);
@@ -1186,10 +1242,13 @@ export class ContainerComponent {
 
       const onError = () => {
         console.error(`Failed to load video ${index}`);
-        loadedCount++;
-        if (loadedCount === this.totalVideos) {
-          this.onAllVideosLoaded();
+        this.onAssetLoaded();
+        
+        if (loadingCounter) {
+          const progress = Math.floor((this.loadedAssets * 100) / this.totalAssetsToLoad);
+          loadingCounter.textContent = `[${progress.toString().padStart(2, '0')}]`;
         }
+        
         video.removeEventListener('error', onError);
       };
 
@@ -1205,15 +1264,22 @@ export class ContainerComponent {
     }, 300);
   }
 
-  private hideLoadingScreen(): void {
+   private hideLoadingScreen(): void {
     const loadingOverlay = document.getElementById('loading-overlay');
     if (!loadingOverlay) return;
 
     const timeline = gsap.timeline({
       onComplete: () => {
         loadingOverlay.style.display = 'none';
+        this.isLoaded = true;
+        document.body.style.overflow = 'auto';
+        document.documentElement.scrollTo(0, 0);
+        
         this.initLenis();
         this.initPage();
+        setTimeout(() => {
+          this.initScrollAnimations();
+        }, 600);
       },
     });
 
@@ -1333,10 +1399,7 @@ export class ContainerComponent {
         }
       },
       play: (soundName: string, delay = 0) => {
-        if (
-          this.soundManager.isEnabled &&
-          this.soundManager.sounds[soundName]
-        ) {
+        if (this.soundManager.isEnabled && this.soundManager.sounds[soundName]) {
           if (delay > 0) {
             setTimeout(() => {
               this.soundManager.sounds[soundName].currentTime = 0;
@@ -1350,43 +1413,40 @@ export class ContainerComponent {
       },
     };
 
-    this.soundManager.loadSound(
-      'hover',
-      'https://assets.codepen.io/7558/click-reverb-001.mp3',
-      1
-    );
-    this.soundManager.loadSound(
-      'click',
-      'https://assets.codepen.io/7558/shutter-fx-001.mp3',
-      1
-    );
-    this.soundManager.loadSound(
-      'textChange',
-      'https://assets.codepen.io/7558/whoosh-fx-001.mp3',
-      1
-    );
+    this.soundManager.loadSound('hover', 'https://assets.codepen.io/7558/click-reverb-001.mp3', 1);
+    this.soundManager.loadSound('click', 'https://assets.codepen.io/7558/shutter-fx-001.mp3', 1);
+    this.soundManager.loadSound('textChange', 'https://assets.codepen.io/7558/whoosh-fx-001.mp3', 1);
   }
 
-  private initLenis(): void {
-    this.lenis = new Lenis({
-      duration: 1.2,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 2,
-      infinite: false,
-    });
+ private initLenis(): void {
+    if (!this.isBrowser) return;
 
-    this.lenis.on('scroll', ScrollTrigger.update);
+    try {
+      this.lenis = new Lenis({
+        duration: 1.2,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 1,
+        touchMultiplier: 2,
+        infinite: false,
+      });
 
-    gsap.ticker.add((time: number) => {
       if (this.lenis) {
-        this.lenis.raf(time * 1000);
+        this.lenis.on('scroll', ScrollTrigger.update);
+
+        gsap.ticker.add((time: number) => {
+          if (this.lenis) {
+            this.lenis.raf(time * 1000);
+          }
+        });
+        
+        gsap.ticker.lagSmoothing(0);
       }
-    });
-    gsap.ticker.lagSmoothing(0);
+    } catch (error) {
+      console.error('Failed to initialize Lenis:', error);
+    }
   }
 
   private initPage(): void {
@@ -1933,14 +1993,8 @@ export class ContainerComponent {
     });
   }
 
-  navigateToSection(index: number): void {
-    if (
-      index === this.currentSection ||
-      this.isAnimating ||
-      this.isSnapping ||
-      !this.lenis
-    )
-      return;
+ navigateToSection(index: number): void {
+    if (index === this.currentSection || this.isAnimating || this.isSnapping || !this.lenis) return;
 
     this.soundManager.enableAudio();
     this.soundManager.play('click');
@@ -1960,10 +2014,11 @@ export class ContainerComponent {
     });
   }
 
-  onItemHover(): void {
+ onItemHover(): void {
     this.soundManager.enableAudio();
     this.soundManager.play('hover');
   }
+
 
   private changeSection(newSection: number): void {
     if (newSection === this.currentSection || this.isAnimating) return;
@@ -2122,4 +2177,133 @@ export class ContainerComponent {
         .padStart(2, '0');
     }
   }
+
+
+
+ private distributeImagesIntoGalleries(): void {
+    const shuffledImages = [...this.galleryImages].sort(() => Math.random() - 0.5);
+    
+    const sectionsCount = 4;
+    const imagesPerSection = Math.ceil(shuffledImages.length / sectionsCount);
+    
+    for (let i = 0; i < sectionsCount; i++) {
+      const startIndex = i * imagesPerSection;
+      const endIndex = Math.min(startIndex + imagesPerSection, shuffledImages.length);
+      const sectionImages = shuffledImages.slice(startIndex, endIndex);
+      
+      const rowHeight = this.rowHeights[i % this.rowHeights.length];
+      
+      const images: GalleryImage[] = sectionImages.map(src => ({
+        src,
+        width: this.w,
+        height: rowHeight,
+      }));
+      
+      this.galleries.push({ 
+        images,
+        rowHeight 
+      });
+      this.totalImages += images.length;
+    }
+  }
+
+   private waitForGsap(): void {
+    const checkGsap = () => {
+      if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+        console.log('GSAP and ScrollTrigger loaded successfully');
+      } else {
+        setTimeout(checkGsap, 50);
+      }
+    };
+    checkGsap();
+  }
+
+
+  onImageLoad(): void {
+    if (!this.isBrowser) return;
+    this.onAssetLoaded();
+  }
+
+  private onAssetLoaded(): void {
+    if (!this.isBrowser) return;
+
+    this.loadedAssets++;
+    this.loadProgress = Math.round((this.loadedAssets * 100) / this.totalAssetsToLoad);
+
+    const progressBar = document.querySelector('.progress-bar');
+    if (progressBar) {
+      (progressBar as HTMLElement).style.width = `${this.loadProgress}%`;
+    }
+
+    if (this.loadedAssets >= this.totalAssetsToLoad) {
+      setTimeout(() => {
+        this.hideLoadingScreen();
+      }, 300);
+    }
+  }
+
+  private showDemo(): void {
+    if (!this.isBrowser) return;
+
+    this.isLoaded = true;
+    document.body.style.overflow = 'auto';
+    document.documentElement.scrollTo(0, 0);
+
+    setTimeout(() => {
+      this.initScrollAnimations();
+    }, 600);
+  }
+
+  private initScrollAnimations(): void {
+    if (!this.isBrowser || typeof gsap === 'undefined') return;
+
+    if (typeof ScrollTrigger !== 'undefined') {
+      gsap.registerPlugin(ScrollTrigger);
+    }
+
+    const sections = document.querySelectorAll('section');
+
+    sections.forEach((section, index) => {
+      const wrapper = section.querySelector('.wrapper') as HTMLElement;
+      if (!wrapper) return;
+
+      const isEven = index % 2 === 0;
+      const scrollWidth = wrapper.scrollWidth;
+      const offsetWidth = section.offsetWidth;
+
+      let xStart: number;
+      let xEnd: number;
+
+      if (isEven) {
+        xStart = scrollWidth * -1;
+        xEnd = 0;
+      } else {
+        xStart = offsetWidth;
+        xEnd = (scrollWidth - offsetWidth) * -1;
+      }
+
+      gsap.fromTo(
+        wrapper,
+        { x: xStart },
+        {
+          x: xEnd,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: section,
+            scrub: 0.5,
+            start: 'top bottom',
+            end: 'bottom top',
+          },
+        }
+      );
+    });
+
+    if (typeof ScrollTrigger !== 'undefined') {
+      ScrollTrigger.refresh();
+    }
+  }
+
+ 
+  
 }

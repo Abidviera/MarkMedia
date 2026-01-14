@@ -11,6 +11,7 @@ import { ServicesDetailComponent } from './components/services-detail/services-d
 import { SharedModule } from '../../shared/shared.module';
 import { TestimonialsComponent } from './components/testimonials/testimonials.component';
 import { GalleryComponent } from './components/gallery/gallery.component';
+import { AboutWithCameraComponent } from './components/about-with-camera/about-with-camera.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { GalleryComponent } from './components/gallery/gallery.component';
     ServicesDetailComponent,
     TestimonialsComponent,
     GalleryComponent,
+    AboutWithCameraComponent,
   ],
   imports: [CommonModule, LandingPageRoutingModule, FormsModule, SharedModule],
 })

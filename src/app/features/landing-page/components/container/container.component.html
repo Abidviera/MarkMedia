@@ -34,6 +34,16 @@
           <span class="char-wrapper"><span class="char">A</span></span>
         </span>
       </div>
+      
+      <div class="company-tagline">Premium Photography & Videography</div>
+      
+      <!-- Add progress indicator to the loader -->
+      <div class="loading-progress">
+        <div class="progress-container">
+          <div class="progress-bar" [style.width.%]="loadProgress"></div>
+        </div>
+        <div class="progress-text" id="loading-counter">[00]</div>
+      </div>
     </div>
   </div>
 </div>
@@ -156,67 +166,9 @@
     </div>
   </div>
 
-  <div class="end-section" id="about">
-    <div class="about-container">
-      <div class="about-bg-elements">
-        <div class="bg-circle circle-1"></div>
-        <div class="bg-circle circle-2"></div>
-        <div class="bg-grid"></div>
-      </div>
-
-      <div class="about-content">
-        <div class="about-logo-section" data-scroll>
-          <img src="HERO/logo.png" alt="Mark Media Logo" class="about-logo" />
-        </div>
-
-        <div class="about-title" data-scroll>
-          <h2>
-            <span class="title-line">
-              <span class="title-word">MARK MEDIA</span>
-            </span>
-          </h2>
-        </div>
-
-        <div class="about-tagline" data-scroll>
-          <p>Capturing Excellence | UAE Based Photography</p>
-        </div>
-
-        <div class="about-description" data-scroll>
-          <p class="desc-main">
-            We are a premium photography and videography studio based in the
-            United Arab Emirates, specializing in transforming moments into
-            timeless visual stories.
-          </p>
-          <p class="desc-secondary">
-            From breathtaking weddings and high-energy events to sophisticated
-            corporate campaigns and intimate fashion editorials, we bring
-            creativity, precision, and passion to every project.
-          </p>
-        </div>
-
-        <div class="about-stats" data-scroll>
-          <div class="stat-item">
-            <div class="stat-number" data-target="500">500+</div>
-            <div class="stat-label">Projects Completed</div>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-item">
-            <div class="stat-number" data-target="10">10+</div>
-            <div class="stat-label">Years Experience</div>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-item">
-            <div class="stat-number" data-target="100">450+</div>
-            <div class="stat-label">Happy Clients</div>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-item">
-            <div class="stat-number" data-target="15">15+</div>
-            <div class="stat-label">Team Members</div>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div class="end-section" id="about-camera-section">
+   
+   <app-about-with-camera></app-about-with-camera>
   </div>
 
   <div class="services-container" id="services">
@@ -286,5 +238,47 @@
     </section>
   </div>
 
-  <app-gallery></app-gallery>
+
+<div class="demo-wrapper">
+  <header class="df aic jcc">
+    <div>
+      <h1>Visual Stories</h1>
+      <h2>Photography Portfolio</h2>
+    </div>
+  </header>
+
+  <section class="demo-text">
+    <div class="wrapper text">
+      LIGHT • SHADOW • PERSPECTIVE • MOMENT
+    </div>
+  </section>
+
+  <section 
+    class="demo-gallery" 
+    *ngFor="let gallery of galleries; let i = index"
+    [style.height.px]="gallery.rowHeight">
+    <ul class="wrapper">
+      <li *ngFor="let image of gallery.images">
+        <img 
+          [src]="image.src" 
+          [attr.width]="image.width" 
+          [attr.height]="image.height"
+          (load)="onImageLoad()"
+          (error)="onImageLoad()"
+          alt="Photography showcase"
+        />
+      </li>
+    </ul>
+  </section>
+
+  <section class="demo-text">
+    <div class="wrapper text">
+      COMPOSE • CAPTURE • CREATE • TELL
+    </div>
+  </section>
+
+  <footer class="df aic jcc">
+    <p>Through The Lens | <a href="https://pexels.com/" target="_blank" rel="noopener">Image Credits</a></p>
+  </footer>
+</div>
 </div>

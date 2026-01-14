@@ -202,4 +202,5 @@ export class GalleryComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
+  
 }

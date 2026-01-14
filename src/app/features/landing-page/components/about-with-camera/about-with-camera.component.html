@@ -1,0 +1,169 @@
+<!-- ================== HEADER ================== -->
+<header [style.--border-width]="'0%'">
+     
+</header>
+
+<!-- ================== MAIN CONTENT ================== -->
+<main>
+  <!-- Hero Camera Overlay Wrapper -->
+  <div class="hero-bottle-wrapper">
+    <img src="camera.png" alt="Professional Photography Equipment" class="hero-bottle" />
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero vintage-hero">
+    <div class="hero-content">
+      <!-- Decorative Logo Stamp -->
+      <img src="HERO/logoblack.png" alt="Mark Media Logo" class="hero-stamp">
+
+      <!-- Main Heading -->
+      <h1>
+        <span class="line">Mark Media</span>
+        <span class="line highlight">Visual Excellence</span>
+      </h1>
+    </div>
+  </section>
+
+  <!-- Introduction Section -->
+  <section class="section-intro">
+    <div class="intro-grid">
+      <!-- Left Side: Headings and Description -->
+      <div class="intro-left">
+        <p class="small-title">About Us</p>
+        <h2 class="main-heading">Capturing Timeless Moments</h2>
+        <p class="description">
+          Mark Media is a premier photography and videography studio based in the United Arab Emirates. 
+          We specialize in transforming moments into timeless visual stories through our comprehensive 
+          range of professional photography services. From breathtaking weddings to high-energy events, 
+          sophisticated corporate campaigns to intimate fashion editorials, we bring creativity, 
+          precision, and passion to every project.
+        </p>
+        
+        <!-- Stats Box replacing CTA -->
+        <div class="stats-grid">
+          <div class="stat-box" *ngFor="let stat of stats; let i = index">
+            <div class="stat-number stat-number-{{i}}">0{{stat.suffix}}</div>
+            <div class="stat-label">{{stat.label}}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side: Services List -->
+      <div class="intro-right">
+        <div class="ingredients-log">
+          <h3 class="ingredients-title">Our Expertise</h3>
+
+          <!-- Each Service -->
+          <div class="ingredient-item">
+            <div class="ingredient-qty">📸</div>
+            <div class="ingredient-text">
+              <strong>Event Photography</strong>
+              <p>Corporate gatherings, exhibitions, conferences - comprehensive coverage.</p>
+            </div>
+          </div>
+
+          <div class="ingredient-item">
+            <div class="ingredient-qty">💍</div>
+            <div class="ingredient-text">
+              <strong>Weddings & Celebrations</strong>
+              <p>Timeless wedding photography capturing every precious moment.</p>
+            </div>
+          </div>
+
+          <div class="ingredient-item">
+            <div class="ingredient-qty">👔</div>
+            <div class="ingredient-text">
+              <strong>Fashion & Editorial</strong>
+              <p>High-end fashion photography, runway coverage, and model portfolios.</p>
+            </div>
+          </div>
+
+          <div class="ingredient-item">
+            <div class="ingredient-qty">⚽</div>
+            <div class="ingredient-text">
+              <strong>Sports Photography</strong>
+              <p>Dynamic action shots capturing peak athletic moments.</p>
+            </div>
+          </div>
+
+          <div class="ingredient-item">
+            <div class="ingredient-qty">🏥</div>
+            <div class="ingredient-text">
+              <strong>Medical & Healthcare</strong>
+              <p>Professional documentation for hospitals and healthcare facilities.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline Section - Service Categories -->
+  <section class="timeline-section">
+    <h2 class="timeline-main-title">Our Services</h2>
+
+    <!-- First Service Category -->
+    <div class="timeline-entry">
+      <!-- Left Column: Number + Image -->
+      <div class="timeline-left">
+        <div class="timeline-date">01</div>
+        <img src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80" 
+             alt="Photography & Videography Services" class="timeline-img" />
+      </div>
+
+      <!-- Right Column: Services List -->
+      <div class="timeline-right">
+        <h3 class="timeline-title">Photography & Videography Services</h3>
+        <div class="timeline-description">
+          <p>• Event & Corporate Photography</p>
+          <p>• Wedding & Engagement Sessions</p>
+          <p>• Fashion & Editorial Shoots</p>
+          <p>• Sports & Action Photography</p>
+          <p>• Portrait & Lifestyle Photography</p>
+          <p>• Product & Commercial Photography</p>
+          <p>• Real Estate & Architecture Photography</p>
+          <p>• Medical & Healthcare Documentation</p>
+          <p>• Cinematic Wedding Films</p>
+          <p>• Corporate Video Production</p>
+          <p>• Event Videography & Live Coverage</p>
+          <p>• Fashion & Promotional Videos</p>
+          <p>• Product Demonstration Videos</p>
+          <p>• Drone & Aerial Photography/Videography</p>
+          <p>• 360° Virtual Tours</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Second Service Category -->
+    <div class="timeline-entry">
+      <div class="timeline-left">
+        <div class="timeline-date">02</div>
+        <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80" 
+             alt="Post-Production & Specialized Services" class="timeline-img" />
+      </div>
+
+      <div class="timeline-right">
+        <h3 class="timeline-title">Post-Production & Specialized Services</h3>
+        <div class="timeline-description">
+          <p>• Professional Editing & Color Grading</p>
+          <p>• Photo Retouching & Enhancement</p>
+          <p>• Beauty & Skin Retouching</p>
+          <p>• Background Removal & Manipulation</p>
+          <p>• HDR Processing & Compositing</p>
+          <p>• Studio & On-Location Shoots</p>
+          <p>• Professional Lighting Setup</p>
+          <p>• Makeup Artist & Stylist Collaboration</p>
+          <p>• Creative Direction & Art Direction</p>
+          <p>• Model & Talent Coordination</p>
+          <p>• Fast Turnaround (24-48 hours)</p>
+          <p>• Print-Ready File Preparation</p>
+          <p>• Custom Album & Print Design</p>
+          <p>• Digital Gallery & Cloud Delivery</p>
+          <p>• Video Post-Production & Motion Graphics</p>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+</main>
