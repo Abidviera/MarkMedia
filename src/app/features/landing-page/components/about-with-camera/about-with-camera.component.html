@@ -1,20 +1,22 @@
 <!-- ================== HEADER ================== -->
-<header [style.--border-width]="'0%'">
-     
-</header>
+<header [style.--border-width]="'0%'"></header>
 
 <!-- ================== MAIN CONTENT ================== -->
 <main>
   <!-- Hero Camera Overlay Wrapper -->
   <div class="hero-bottle-wrapper">
-    <img src="camera.png" alt="Professional Photography Equipment" class="hero-bottle" />
+    <img
+      src="camera.png"
+      alt="Professional Photography Equipment"
+      class="hero-bottle"
+    />
   </div>
 
   <!-- Hero Section -->
   <section class="hero vintage-hero">
     <div class="hero-content">
       <!-- Decorative Logo Stamp -->
-      <img src="HERO/logoblack.png" alt="Mark Media Logo" class="hero-stamp">
+      <img src="HERO/logoblack.png" alt="Mark Media Logo" class="hero-stamp" />
 
       <!-- Main Heading -->
       <h1>
@@ -32,18 +34,22 @@
         <p class="small-title">About Us</p>
         <h2 class="main-heading">Capturing Timeless Moments</h2>
         <p class="description">
-          Mark Media is a premier photography and videography studio based in the United Arab Emirates. 
-          We specialize in transforming moments into timeless visual stories through our comprehensive 
-          range of professional photography services. From breathtaking weddings to high-energy events, 
-          sophisticated corporate campaigns to intimate fashion editorials, we bring creativity, 
-          precision, and passion to every project.
+          Mark Media is a premier photography and videography studio based in
+          the United Arab Emirates. We specialize in transforming moments into
+          timeless visual stories through our comprehensive range of
+          professional photography services. From breathtaking weddings to
+          high-energy events, sophisticated corporate campaigns to intimate
+          fashion editorials, we bring creativity, precision, and passion to
+          every project.
         </p>
-        
+
         <!-- Stats Box replacing CTA -->
         <div class="stats-grid">
           <div class="stat-box" *ngFor="let stat of stats; let i = index">
-            <div class="stat-number stat-number-{{i}}">0{{stat.suffix}}</div>
-            <div class="stat-label">{{stat.label}}</div>
+            <div class="stat-number stat-number-{{ i }}">
+              0{{ stat.suffix }}
+            </div>
+            <div class="stat-label">{{ stat.label }}</div>
           </div>
         </div>
       </div>
@@ -58,7 +64,10 @@
             <div class="ingredient-qty">📸</div>
             <div class="ingredient-text">
               <strong>Event Photography</strong>
-              <p>Corporate gatherings, exhibitions, conferences - comprehensive coverage.</p>
+              <p>
+                Corporate gatherings, exhibitions, conferences - comprehensive
+                coverage.
+              </p>
             </div>
           </div>
 
@@ -66,7 +75,9 @@
             <div class="ingredient-qty">💍</div>
             <div class="ingredient-text">
               <strong>Weddings & Celebrations</strong>
-              <p>Timeless wedding photography capturing every precious moment.</p>
+              <p>
+                Timeless wedding photography capturing every precious moment.
+              </p>
             </div>
           </div>
 
@@ -74,7 +85,10 @@
             <div class="ingredient-qty">👔</div>
             <div class="ingredient-text">
               <strong>Fashion & Editorial</strong>
-              <p>High-end fashion photography, runway coverage, and model portfolios.</p>
+              <p>
+                High-end fashion photography, runway coverage, and model
+                portfolios.
+              </p>
             </div>
           </div>
 
@@ -90,7 +104,10 @@
             <div class="ingredient-qty">🏥</div>
             <div class="ingredient-text">
               <strong>Medical & Healthcare</strong>
-              <p>Professional documentation for hospitals and healthcare facilities.</p>
+              <p>
+                Professional documentation for hospitals and healthcare
+                facilities.
+              </p>
             </div>
           </div>
         </div>
@@ -107,8 +124,11 @@
       <!-- Left Column: Number + Image -->
       <div class="timeline-left">
         <div class="timeline-date">01</div>
-        <img src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80" 
-             alt="Photography & Videography Services" class="timeline-img" />
+        <img
+          src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80"
+          alt="Photography & Videography Services"
+          class="timeline-img"
+        />
       </div>
 
       <!-- Right Column: Services List -->
@@ -138,8 +158,11 @@
     <div class="timeline-entry">
       <div class="timeline-left">
         <div class="timeline-date">02</div>
-        <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80" 
-             alt="Post-Production & Specialized Services" class="timeline-img" />
+        <img
+          src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80"
+          alt="Post-Production & Specialized Services"
+          class="timeline-img"
+        />
       </div>
 
       <div class="timeline-right">
@@ -163,7 +186,5 @@
         </div>
       </div>
     </div>
-
   </section>
-
 </main>

@@ -635,3 +635,79 @@ main {
     order: 2;
   }
 }
+
+/* === Stats Grid (replaces CTA in intro section) === */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.stat-box {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  border: 2px solid var(--tan);
+  background-color: var(--papaya-whip);
+  transition: all 0.3s ease;
+}
+
+.stat-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  border-color: var(--sienna);
+}
+
+.stat-number {
+  font-family: "Veneer", serif;
+  font-size: 3rem;
+  color: var(--sienna);
+  font-weight: 100;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+/* Individual stat number variants (if needed for different colors) */
+.stat-number-0 {
+  color: var(--sienna);
+}
+
+.stat-number-1 {
+  color: var(--sienna-2);
+}
+
+.stat-number-2 {
+  color: var(--sienna);
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--black);
+}
+
+/* === Responsive Stats Grid === */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1rem;
+  }
+
+  .stat-number {
+    font-size: 2rem;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+  }
+}
+
+
+/* === Highlight class for hero text === */
+.highlight {
+  color: var(--sienna) !important;
+  -webkit-text-stroke: 2px var(--sienna);
+  text-shadow: 3px 3px 0 rgba(177, 86, 14, 0.3);
+}
