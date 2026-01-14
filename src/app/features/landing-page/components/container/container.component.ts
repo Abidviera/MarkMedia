@@ -1481,53 +1481,46 @@ export class ContainerComponent {
     );
   }
 
-  private initLenis(): void {
-    if (!this.isBrowser) return;
+ private initLenis(): void {
+  if (!this.isBrowser) return;
 
-    try {
-      const lenisOptions: any = {
-        duration: 1.8,
-        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        orientation: 'vertical',
-        gestureOrientation: 'vertical',
-        smoothWheel: true,
-        wheelMultiplier: 0.8,
-        touchMultiplier: 1.5,
-        infinite: false,
+  try {
+    const lenisOptions: any = {
+      duration: 1.2, // Reduced from 1.8 for smoother response
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1, // Increased from 0.8 for better control
+      touchMultiplier: 2, // Increased from 1.5
+      infinite: false,
+      smooth: true,
+      direction: 'vertical',
+      // CRITICAL ADDITIONS:
+      syncTouch: true, // Sync touch events
+      syncTouchLerp: 0.1, // Smooth touch lerp
+      touchInertiaMultiplier: 35, // Better touch inertia
+    };
 
-        smooth: true,
-        direction: 'vertical',
-      };
+    this.lenis = new Lenis(lenisOptions);
 
-      this.lenis = new Lenis(lenisOptions);
-
-      if (this.lenis) {
-        this.lenis.on('scroll', () => {
-          if (typeof ScrollTrigger !== 'undefined') {
-            ScrollTrigger.update();
-          }
-        });
-
-        const raf = (time: number) => {
-          if (this.lenis) {
-            this.lenis.raf(time);
-          }
-          requestAnimationFrame(raf);
-        };
-
-        requestAnimationFrame(raf);
-
-        if (typeof ScrollTrigger !== 'undefined') {
-          ScrollTrigger.update();
+    if (this.lenis) {
+      // Use RAF for smoother updates
+      const raf = (time: number) => {
+        if (this.lenis) {
+          this.lenis.raf(time);
         }
+        requestAnimationFrame(raf);
+      };
+      requestAnimationFrame(raf);
 
-        console.log('Lenis initialized successfully');
-      }
-    } catch (error) {
-      console.error('Failed to initialize Lenis:', error);
-      this.setupNativeScrollingFallback();
+      // CRITICAL: Debounced scroll update
+      this.lenis.on('scroll', ScrollTrigger.update);
     }
+  } catch (error) {
+    console.error('Failed to initialize Lenis:', error);
   }
+}
 
   private setupNativeScrollingFallback(): void {
     console.warn('Lenis failed, using native scrolling');
@@ -1673,37 +1666,49 @@ export class ContainerComponent {
     }
 
     this.mainScrollTrigger = ScrollTrigger.create({
-      trigger: '.fixed-section',
-      start: 'top top',
-      end: 'bottom bottom',
-      pin: '.fixed-container',
-      pinSpacing: true,
-      onUpdate: (self: any) => {
-        if (this.isSnapping) return;
+    trigger: '.fixed-section',
+    start: 'top top',
+    end: 'bottom bottom',
+    pin: '.fixed-container',
+    pinSpacing: true,
+    // CRITICAL PERFORMANCE ADDITIONS:
+    anticipatePin: 1,
+    fastScrollEnd: true, // Prevent scroll jumping
+    preventOverlaps: true, // Prevent animation overlaps
+    refreshPriority: 1, // Higher priority refresh
+    onUpdate: (self: any) => {
+      // Throttle updates to prevent too many calculations
+      if (this.isSnapping) return;
 
-        const progress = self.progress;
-        const progressDelta = progress - this.lastProgress;
+      const progress = self.progress;
+      const progressDelta = progress - this.lastProgress;
 
-        if (Math.abs(progressDelta) > 0.001) {
-          this.scrollDirection = progressDelta > 0 ? 1 : -1;
-        }
+      // Only update if there's significant change
+      if (Math.abs(progressDelta) > 0.005) { // Increased threshold
+        this.scrollDirection = progressDelta > 0 ? 1 : -1;
+      }
 
-        const targetSection = Math.min(5, Math.floor(progress * 6));
+      const targetSection = Math.min(5, Math.floor(progress * 6));
 
-        if (targetSection !== this.currentSection && !this.isAnimating) {
-          const nextSection =
-            this.currentSection +
-            (targetSection > this.currentSection ? 1 : -1);
-          this.snapToSection(nextSection);
-        }
+      if (targetSection !== this.currentSection && !this.isAnimating) {
+        const nextSection =
+          this.currentSection +
+          (targetSection > this.currentSection ? 1 : -1);
+        this.snapToSection(nextSection);
+      }
 
-        this.lastProgress = progress;
+      this.lastProgress = progress;
+      
+      // Use RAF for progress bar update
+      requestAnimationFrame(() => {
         const sectionProgress = this.currentSection / 5;
+        const progressFill = document.getElementById('progress-fill');
         if (progressFill) {
           progressFill.style.width = `${sectionProgress * 100}%`;
         }
-      },
-    });
+      });
+    },
+  });
 
     ScrollTrigger.create({
       trigger: '.end-section',
@@ -1990,32 +1995,63 @@ export class ContainerComponent {
       ease: 'power2.out',
     });
   }
+  private setupPerformanceMonitoring(): void {
+  if (!this.isBrowser) return;
 
-  private setupHorizontalGalleryScroll(): void {
-    const galleryPinWrap = document.querySelector(
-      '.gallery-pin-wrap'
-    ) as HTMLElement;
-
-    if (galleryPinWrap) {
-      const galleryWidth = galleryPinWrap.scrollWidth;
-      const horizontalScrollLength = galleryWidth - window.innerWidth;
-
-      gsap.to('.gallery-pin-wrap', {
-        scrollTrigger: {
-          trigger: '.gallery-section',
-          pin: true,
-          scrub: 1,
-          start: 'top top',
-          end: () => `+=${galleryWidth}`,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        },
-        x: -horizontalScrollLength,
-        ease: 'none',
-      });
+  let frameCount = 0;
+  let lastTime = performance.now();
+  
+  const checkPerformance = () => {
+    frameCount++;
+    const currentTime = performance.now();
+    
+    if (currentTime >= lastTime + 1000) {
+      const fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
+      
+      // Adjust quality based on FPS
+      if (fps < 30) {
+        console.warn('Low FPS detected, reducing animation quality');
+        // Reduce animation complexity
+        gsap.ticker.fps(30);
+      }
+      
+      frameCount = 0;
+      lastTime = currentTime;
     }
-  }
+    
+    requestAnimationFrame(checkPerformance);
+  };
+  
+  requestAnimationFrame(checkPerformance);
+}
 
+ private setupHorizontalGalleryScroll(): void {
+  const galleryPinWrap = document.querySelector('.gallery-pin-wrap') as HTMLElement;
+
+  if (galleryPinWrap) {
+    const galleryWidth = galleryPinWrap.scrollWidth;
+    const horizontalScrollLength = galleryWidth - window.innerWidth;
+
+    // Optimize with will-change
+    galleryPinWrap.style.willChange = 'transform';
+
+    gsap.to('.gallery-pin-wrap', {
+      scrollTrigger: {
+        trigger: '.gallery-section',
+        pin: true,
+        scrub: 0.5, // Reduced from 1 for smoother response
+        start: 'top top',
+        end: () => `+=${galleryWidth}`,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        fastScrollEnd: true, // Prevent jumping
+      },
+      x: -horizontalScrollLength,
+      ease: 'none',
+      force3D: true, // Hardware acceleration
+    });
+  }
+}
   private setupPortfolioAnimations(): void {
     gsap.from('.intro-content h2 span', {
       scrollTrigger: {
@@ -2259,6 +2295,19 @@ export class ContainerComponent {
     });
   }
 
+  private lastScrollUpdateTime = 0;
+private scrollUpdateDelay = 16;
+private onScrollUpdate = () => {
+  const now = performance.now();
+  
+  if (now - this.lastScrollUpdateTime >= this.scrollUpdateDelay) {
+    this.lastScrollUpdateTime = now;
+    
+    if (typeof ScrollTrigger !== 'undefined') {
+      ScrollTrigger.update();
+    }
+  }
+};
   private updateProgressNumbers(): void {
     const currentSectionDisplay = document.getElementById('current-section');
     if (currentSectionDisplay) {
@@ -2353,27 +2402,30 @@ export class ContainerComponent {
     }, 600);
   }
 
-  private optimizeFrameRate(): void {
-    if (!this.isBrowser) return;
+ private optimizeFrameRate(): void {
+  if (!this.isBrowser) return;
 
-    const isMobile = window.innerWidth < 768;
+  if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+    // CRITICAL GSAP OPTIMIZATIONS:
+    gsap.ticker.lagSmoothing(0); // Disable lag smoothing
+    gsap.ticker.fps(60); // Lock to 60fps for all devices
+    
+    // Optimize ScrollTrigger
+    ScrollTrigger.config({
+      limitCallbacks: true,
+      ignoreMobileResize: true,
+      autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load',
+      syncInterval: 16.7, // ~60fps sync
+    });
 
-    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-      gsap.ticker.lagSmoothing(0);
-
-      if (isMobile) {
-        gsap.ticker.fps(60);
-      } else {
-        gsap.ticker.fps(120);
-      }
-
-      ScrollTrigger.config({
-        limitCallbacks: true,
-        ignoreMobileResize: true,
-        autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load',
-      });
-    }
+    // Normalize scroll behavior
+    ScrollTrigger.normalizeScroll({
+      allowNestedScroll: true,
+     momentum: (self: any) => Math.min(1, self.velocityY / 1000),
+      type: "pointer,touch,wheel"
+    });
   }
+}
 
   private initScrollAnimations(): void {
     if (!this.isBrowser || typeof gsap === 'undefined') return;
