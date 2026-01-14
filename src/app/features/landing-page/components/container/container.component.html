@@ -239,7 +239,7 @@
   </div>
 
 
-<div class="demo-wrapper">
+<div class="demo-wrapper" #demoWrapper>
   <header class="df aic jcc">
     <div>
       <h1>Visual Stories</h1>
@@ -256,13 +256,16 @@
   <section 
     class="demo-gallery" 
     *ngFor="let gallery of galleries; let i = index"
-    [style.height.px]="gallery.rowHeight">
+    [style.height.px]="gallery.rowHeight"
+    #demoGalleryContainer>
     <ul class="wrapper">
       <li *ngFor="let image of gallery.images">
         <img 
           [src]="image.src" 
           [attr.width]="image.width" 
           [attr.height]="image.height"
+          [attr.loading]="'lazy'"
+          [attr.decoding]="'async'"
           (load)="onImageLoad()"
           (error)="onImageLoad()"
           alt="Photography showcase"

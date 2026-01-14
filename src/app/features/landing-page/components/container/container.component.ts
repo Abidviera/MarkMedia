@@ -5,11 +5,11 @@ import {
   AfterViewInit,
   PLATFORM_ID,
   Inject,
+  ElementRef,
+  ViewChild,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import Lenis from 'lenis';
-
-// Interface definitions
+import Lenis, { LenisOptions } from 'lenis';
 interface GalleryImage {
   src: string;
   width: number;
@@ -70,6 +70,14 @@ declare const SplitText: any;
   styleUrl: './container.component.scss',
 })
 export class ContainerComponent {
+  @ViewChild('demoWrapper') demoWrapper!: ElementRef;
+  @ViewChild('demoGalleryContainer') demoGalleryContainer!: ElementRef;
+  private demoScrollTriggers: any[] = [];
+  private resizeObserver: ResizeObserver | null = null;
+  private isDemoAnimating = false;
+  private lastScrollTime = 0;
+  private scrollThrottleDelay = 16;
+
   private lenis: Lenis | null = null;
   private soundManager: any;
   private splitTexts: { [key: string]: SplitTextInstance } = {};
@@ -85,40 +93,37 @@ export class ContainerComponent {
   private videosLoaded = 0;
   private totalVideos = 6;
   private textAnimations: any[] = [];
-  
-  // Gallery related properties
+
   private w = 1240;
   galleries: GallerySection[] = [];
   loadProgress = 0;
   isLoaded = false;
   private totalImages = 0;
   private loadedImages = 0;
-  
-  // Unified loader state
+
   private totalAssetsToLoad = 0;
   private loadedAssets = 0;
-  
-  // UI states
+
   isDetailOpen = false;
   selectedDetail: GalleryDetailData | null = null;
 
   private rowHeights = [600, 800, 700, 900];
   private galleryImages: string[] = [
-    'https://images.pexels.com/photos/1366919/pexels-photo-1366919.jpeg',
-    'https://images.pexels.com/photos/1144176/pexels-photo-1144176.jpeg',
-    'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg', 
-    'https://images.pexels.com/photos/1166209/pexels-photo-1166209.jpeg', 
-    'https://images.pexels.com/photos/1252869/pexels-photo-1252869.jpeg', 
-    'https://images.pexels.com/photos/1432675/pexels-photo-1432675.jpeg', 
-    'https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg', 
-    'https://images.pexels.com/photos/1687845/pexels-photo-1687845.jpeg', 
-    'https://images.pexels.com/photos/2531709/pexels-photo-2531709.jpeg', 
-    'https://images.pexels.com/photos/1cosmos74/pexels-photo-1cosmos74.jpeg', 
-    'https://images.pexels.com/photos/1761279/pexels-photo-1761279.jpeg', 
-    'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg',
-    'https://images.pexels.com/photos/1366630/pexels-photo-1366630.jpeg', 
-    'https://images.pexels.com/photos/1320686/pexels-photo-1320686.jpeg', 
-    'https://images.pexels.com/photos/1231265/pexels-photo-1231265.jpeg', 
+    'https://images.pexels.com/photos/1366919/pexels-photo-1366919.jpeg?auto=compress&w=800',
+    'https://images.pexels.com/photos/1144176/pexels-photo-1144176.jpeg?auto=compress&w=800',
+    'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg?auto=compress&w=800',
+    'https://images.pexels.com/photos/1166209/pexels-photo-1166209.jpeg?auto=compress&w=800',
+    'https://images.pexels.com/photos/1252869/pexels-photo-1252869.jpeg?auto=compress&w=800',
+    'https://images.pexels.com/photos/1432675/pexels-photo-1432675.jpeg?auto=compress&w=800',
+    'https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg?auto=compress&w=800',
+    'https://images.pexels.com/photos/1687845/pexels-photo-1687845.jpeg?auto=compress&w=800',
+    'https://images.pexels.com/photos/2531709/pexels-photo-2531709.jpeg?auto=compress&w=800',
+    'https://images.pexels.com/photos/1cosmos74/pexels-photo-1cosmos74.jpeg?auto=compress&w=800',
+    'https://images.pexels.com/photos/1761279/pexels-photo-1761279.jpeg?auto=compress&w=800',
+    'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg?auto=compress&w=800',
+    'https://images.pexels.com/photos/1366630/pexels-photo-1366630.jpeg?auto=compress&w=800',
+    'https://images.pexels.com/photos/1320686/pexels-photo-1320686.jpeg?auto=compress&w=800',
+    'https://images.pexels.com/photos/1231265/pexels-photo-1231265.jpeg?auto=compress&w=800',
   ];
 
   private setupTextRevealAnimations(): void {
@@ -1140,14 +1145,14 @@ export class ContainerComponent {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
- ngOnInit(): void {
+  ngOnInit(): void {
     if (!this.isBrowser) return;
 
     this.initSoundManager();
     this.distributeImagesIntoGalleries();
-    
+
     this.totalAssetsToLoad = this.totalVideos + this.totalImages;
-    
+
     if (this.isBrowser) {
       document.body.style.overflow = 'hidden';
     }
@@ -1160,9 +1165,13 @@ export class ContainerComponent {
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => {
           this.preloadVideos();
+          this.optimizeGalleryImages();
+          this.setupPerformanceOptimizations();
         });
       } else {
         this.preloadVideos();
+        this.optimizeGalleryImages();
+        this.setupPerformanceOptimizations();
       }
     }, 500);
   }
@@ -1171,31 +1180,62 @@ export class ContainerComponent {
     if (!this.isBrowser) return;
 
     this.cleanupTextAnimations();
-    this.videoElements.forEach((video) => {
-      video.pause();
-      video.src = '';
-      video.load();
-    });
+    this.cleanupDemoAnimations();
 
     if (this.lenis) {
       this.lenis.destroy();
       this.lenis = null;
     }
-    
-    if (this.mainScrollTrigger) {
-      this.mainScrollTrigger.kill();
-    }
-    
+
+    this.videoElements.forEach((video) => {
+      if (video) {
+        video.pause();
+        video.src = '';
+        video.load();
+      }
+    });
+
     if (typeof ScrollTrigger !== 'undefined') {
       ScrollTrigger.getAll().forEach((trigger: any) => trigger.kill());
     }
-    
+
+    if (typeof gsap !== 'undefined') {
+      gsap.ticker.lagSmoothing(1000);
+      gsap.ticker.fps(60);
+    }
+
     if (this.isBrowser) {
       document.body.style.overflow = '';
     }
+
+    if (this.mainScrollTrigger) {
+      this.mainScrollTrigger.kill();
+    }
+  }
+  private setupPerformanceOptimizations(): void {
+    if (!this.isBrowser) return;
+
+    let resizeTimeout: any;
+
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (typeof ScrollTrigger !== 'undefined') {
+          ScrollTrigger.refresh();
+        }
+        console.log('Viewport resized, refreshing animations');
+      }, 150);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    setTimeout(handleResize, 1000);
+
+    window.addEventListener('orientationchange', () => {
+      setTimeout(handleResize, 300);
+    });
   }
 
- 
   openGalleryDetail(item: GalleryItem): void {
     const detailData = this.galleryDetailsData[item.title];
     if (detailData) {
@@ -1211,9 +1251,9 @@ export class ContainerComponent {
     }, 500);
   }
 
-private preloadVideos(): void {
+  private preloadVideos(): void {
     const loadingCounter = document.getElementById('loading-counter');
-    
+
     this.sections.forEach((section, index) => {
       const video = document.getElementById(
         `background-video-${index}`
@@ -1229,10 +1269,14 @@ private preloadVideos(): void {
 
       const onCanPlay = () => {
         this.onAssetLoaded();
-        
-        const progress = Math.floor((this.loadedAssets * 100) / this.totalAssetsToLoad);
+
+        const progress = Math.floor(
+          (this.loadedAssets * 100) / this.totalAssetsToLoad
+        );
         if (loadingCounter) {
-          loadingCounter.textContent = `[${progress.toString().padStart(2, '0')}]`;
+          loadingCounter.textContent = `[${progress
+            .toString()
+            .padStart(2, '0')}]`;
         }
 
         video.removeEventListener('canplaythrough', onCanPlay);
@@ -1243,12 +1287,16 @@ private preloadVideos(): void {
       const onError = () => {
         console.error(`Failed to load video ${index}`);
         this.onAssetLoaded();
-        
+
         if (loadingCounter) {
-          const progress = Math.floor((this.loadedAssets * 100) / this.totalAssetsToLoad);
-          loadingCounter.textContent = `[${progress.toString().padStart(2, '0')}]`;
+          const progress = Math.floor(
+            (this.loadedAssets * 100) / this.totalAssetsToLoad
+          );
+          loadingCounter.textContent = `[${progress
+            .toString()
+            .padStart(2, '0')}]`;
         }
-        
+
         video.removeEventListener('error', onError);
       };
 
@@ -1264,7 +1312,7 @@ private preloadVideos(): void {
     }, 300);
   }
 
-   private hideLoadingScreen(): void {
+  private hideLoadingScreen(): void {
     const loadingOverlay = document.getElementById('loading-overlay');
     if (!loadingOverlay) return;
 
@@ -1274,15 +1322,15 @@ private preloadVideos(): void {
         this.isLoaded = true;
         document.body.style.overflow = 'auto';
         document.documentElement.scrollTo(0, 0);
-        
+
         this.initLenis();
         this.initPage();
+
         setTimeout(() => {
           this.initScrollAnimations();
         }, 600);
       },
     });
-
     timeline
       .to(
         '.logo-mask',
@@ -1399,7 +1447,10 @@ private preloadVideos(): void {
         }
       },
       play: (soundName: string, delay = 0) => {
-        if (this.soundManager.isEnabled && this.soundManager.sounds[soundName]) {
+        if (
+          this.soundManager.isEnabled &&
+          this.soundManager.sounds[soundName]
+        ) {
           if (delay > 0) {
             setTimeout(() => {
               this.soundManager.sounds[soundName].currentTime = 0;
@@ -1413,40 +1464,73 @@ private preloadVideos(): void {
       },
     };
 
-    this.soundManager.loadSound('hover', 'https://assets.codepen.io/7558/click-reverb-001.mp3', 1);
-    this.soundManager.loadSound('click', 'https://assets.codepen.io/7558/shutter-fx-001.mp3', 1);
-    this.soundManager.loadSound('textChange', 'https://assets.codepen.io/7558/whoosh-fx-001.mp3', 1);
+    this.soundManager.loadSound(
+      'hover',
+      'https://assets.codepen.io/7558/click-reverb-001.mp3',
+      1
+    );
+    this.soundManager.loadSound(
+      'click',
+      'https://assets.codepen.io/7558/shutter-fx-001.mp3',
+      1
+    );
+    this.soundManager.loadSound(
+      'textChange',
+      'https://assets.codepen.io/7558/whoosh-fx-001.mp3',
+      1
+    );
   }
 
- private initLenis(): void {
+  private initLenis(): void {
     if (!this.isBrowser) return;
 
     try {
-      this.lenis = new Lenis({
-        duration: 1.2,
+      const lenisOptions: any = {
+        duration: 1.8,
         easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         orientation: 'vertical',
         gestureOrientation: 'vertical',
         smoothWheel: true,
-        wheelMultiplier: 1,
-        touchMultiplier: 2,
+        wheelMultiplier: 0.8,
+        touchMultiplier: 1.5,
         infinite: false,
-      });
+
+        smooth: true,
+        direction: 'vertical',
+      };
+
+      this.lenis = new Lenis(lenisOptions);
 
       if (this.lenis) {
-        this.lenis.on('scroll', ScrollTrigger.update);
-
-        gsap.ticker.add((time: number) => {
-          if (this.lenis) {
-            this.lenis.raf(time * 1000);
+        this.lenis.on('scroll', () => {
+          if (typeof ScrollTrigger !== 'undefined') {
+            ScrollTrigger.update();
           }
         });
-        
-        gsap.ticker.lagSmoothing(0);
+
+        const raf = (time: number) => {
+          if (this.lenis) {
+            this.lenis.raf(time);
+          }
+          requestAnimationFrame(raf);
+        };
+
+        requestAnimationFrame(raf);
+
+        if (typeof ScrollTrigger !== 'undefined') {
+          ScrollTrigger.update();
+        }
+
+        console.log('Lenis initialized successfully');
       }
     } catch (error) {
       console.error('Failed to initialize Lenis:', error);
+      this.setupNativeScrollingFallback();
     }
+  }
+
+  private setupNativeScrollingFallback(): void {
+    console.warn('Lenis failed, using native scrolling');
   }
 
   private initPage(): void {
@@ -1465,6 +1549,8 @@ private preloadVideos(): void {
       return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
     });
 
+    this.optimizeFrameRate();
+
     this.animateColumns();
     this.setupHeaderFooterAnimations();
     this.setupScrollTriggers();
@@ -1477,7 +1563,6 @@ private preloadVideos(): void {
       this.videoElements[0].play().catch(() => {});
     }
   }
-
   private setupHeaderFooterAnimations(): void {
     if (typeof gsap === 'undefined') return;
 
@@ -1993,8 +2078,14 @@ private preloadVideos(): void {
     });
   }
 
- navigateToSection(index: number): void {
-    if (index === this.currentSection || this.isAnimating || this.isSnapping || !this.lenis) return;
+  navigateToSection(index: number): void {
+    if (
+      index === this.currentSection ||
+      this.isAnimating ||
+      this.isSnapping ||
+      !this.lenis
+    )
+      return;
 
     this.soundManager.enableAudio();
     this.soundManager.play('click');
@@ -2014,11 +2105,10 @@ private preloadVideos(): void {
     });
   }
 
- onItemHover(): void {
+  onItemHover(): void {
     this.soundManager.enableAudio();
     this.soundManager.play('hover');
   }
-
 
   private changeSection(newSection: number): void {
     if (newSection === this.currentSection || this.isAnimating) return;
@@ -2178,36 +2268,43 @@ private preloadVideos(): void {
     }
   }
 
+  private distributeImagesIntoGalleries(): void {
+    const optimizedImages = this.galleryImages.map((url) =>
+      url.includes('?') ? url : `${url}?auto=compress&w=800`
+    );
+    const shuffledImages = [...optimizedImages].sort(() => Math.random() - 0.5);
 
-
- private distributeImagesIntoGalleries(): void {
-    const shuffledImages = [...this.galleryImages].sort(() => Math.random() - 0.5);
-    
+    const isMobile = this.isBrowser && window.innerWidth < 768;
+    const maxImages = isMobile ? 8 : 15;
+    const limitedImages = shuffledImages.slice(0, maxImages);
     const sectionsCount = 4;
     const imagesPerSection = Math.ceil(shuffledImages.length / sectionsCount);
-    
+
     for (let i = 0; i < sectionsCount; i++) {
       const startIndex = i * imagesPerSection;
-      const endIndex = Math.min(startIndex + imagesPerSection, shuffledImages.length);
+      const endIndex = Math.min(
+        startIndex + imagesPerSection,
+        shuffledImages.length
+      );
       const sectionImages = shuffledImages.slice(startIndex, endIndex);
-      
+
       const rowHeight = this.rowHeights[i % this.rowHeights.length];
-      
-      const images: GalleryImage[] = sectionImages.map(src => ({
+
+      const images: GalleryImage[] = sectionImages.map((src) => ({
         src,
         width: this.w,
         height: rowHeight,
       }));
-      
-      this.galleries.push({ 
+
+      this.galleries.push({
         images,
-        rowHeight 
+        rowHeight,
       });
       this.totalImages += images.length;
     }
   }
 
-   private waitForGsap(): void {
+  private waitForGsap(): void {
     const checkGsap = () => {
       if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
@@ -2219,7 +2316,6 @@ private preloadVideos(): void {
     checkGsap();
   }
 
-
   onImageLoad(): void {
     if (!this.isBrowser) return;
     this.onAssetLoaded();
@@ -2229,7 +2325,9 @@ private preloadVideos(): void {
     if (!this.isBrowser) return;
 
     this.loadedAssets++;
-    this.loadProgress = Math.round((this.loadedAssets * 100) / this.totalAssetsToLoad);
+    this.loadProgress = Math.round(
+      (this.loadedAssets * 100) / this.totalAssetsToLoad
+    );
 
     const progressBar = document.querySelector('.progress-bar');
     if (progressBar) {
@@ -2253,6 +2351,28 @@ private preloadVideos(): void {
     setTimeout(() => {
       this.initScrollAnimations();
     }, 600);
+  }
+
+  private optimizeFrameRate(): void {
+    if (!this.isBrowser) return;
+
+    const isMobile = window.innerWidth < 768;
+
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+      gsap.ticker.lagSmoothing(0);
+
+      if (isMobile) {
+        gsap.ticker.fps(60);
+      } else {
+        gsap.ticker.fps(120);
+      }
+
+      ScrollTrigger.config({
+        limitCallbacks: true,
+        ignoreMobileResize: true,
+        autoRefreshEvents: 'visibilitychange,DOMContentLoaded,load',
+      });
+    }
   }
 
   private initScrollAnimations(): void {
@@ -2283,7 +2403,116 @@ private preloadVideos(): void {
         xEnd = (scrollWidth - offsetWidth) * -1;
       }
 
-      gsap.fromTo(
+      gsap.set(wrapper, { willChange: 'transform' });
+
+      const animation = gsap.fromTo(
+        wrapper,
+        {
+          x: xStart,
+          force3D: true,
+        },
+        {
+          x: xEnd,
+          ease: 'none',
+          force3D: true,
+          scrollTrigger: {
+            trigger: section,
+            scrub: 0.3,
+            start: 'top bottom',
+            end: 'bottom top',
+            anticipatePin: 1,
+            fastScrollEnd: true,
+            markers: false,
+          },
+        }
+      );
+
+      this.demoScrollTriggers.push(animation.scrollTrigger);
+    });
+
+    setTimeout(() => {
+      if (typeof ScrollTrigger !== 'undefined') {
+        ScrollTrigger.refresh(true);
+        ScrollTrigger.sort();
+      }
+    }, 100);
+  }
+  private setupDemoTextAnimations(): void {
+    if (!this.isBrowser) return;
+
+    const header = this.demoWrapper?.nativeElement.querySelector('header');
+    if (header) {
+      gsap.from(header, {
+        scrollTrigger: {
+          trigger: header,
+          start: 'top 80%',
+          once: true,
+        },
+        y: 50,
+        opacity: 0,
+        duration: 1.2,
+        ease: 'power3.out',
+      });
+    }
+
+    const footer = this.demoWrapper?.nativeElement.querySelector('footer');
+    if (footer) {
+      gsap.from(footer, {
+        scrollTrigger: {
+          trigger: footer,
+          start: 'top 90%',
+          once: true,
+        },
+        y: 30,
+        opacity: 0,
+        duration: 1,
+        ease: 'power3.out',
+      });
+    }
+  }
+
+  private optimizeGalleryImages(): void {
+    if (!this.isBrowser) return;
+
+    this.galleries.forEach((gallery) => {
+      gallery.images.forEach((image) => {
+        const img = new Image();
+        img.src = image.src;
+        img.loading = 'eager';
+
+        const link = document.createElement('link');
+        link.rel = 'preload';
+        link.as = 'image';
+        link.href = image.src;
+        document.head.appendChild(link);
+      });
+    });
+  }
+  private setupDemoAnimations(): void {
+    if (!this.demoWrapper?.nativeElement) return;
+
+    const sections = this.demoWrapper.nativeElement.querySelectorAll('section');
+
+    sections.forEach((section: HTMLElement, index: number) => {
+      const wrapper = section.querySelector('.wrapper') as HTMLElement;
+      if (!wrapper) return;
+
+      const isEven = index % 2 === 0;
+      const scrollWidth = wrapper.scrollWidth;
+      const offsetWidth = section.offsetWidth;
+
+      let xStart: number;
+      let xEnd: number;
+
+      if (isEven) {
+        xStart = scrollWidth * -1;
+        xEnd = 0;
+      } else {
+        xStart = offsetWidth;
+        xEnd = (scrollWidth - offsetWidth) * -1;
+      }
+
+      const animation = gsap.fromTo(
         wrapper,
         { x: xStart },
         {
@@ -2297,13 +2526,93 @@ private preloadVideos(): void {
           },
         }
       );
-    });
 
-    if (typeof ScrollTrigger !== 'undefined') {
-      ScrollTrigger.refresh();
+      const trigger = ScrollTrigger.getById(animation.scrollTrigger?.id);
+      if (trigger) {
+        this.demoScrollTriggers.push(trigger);
+      }
+    });
+  }
+
+  private throttle<T extends (...args: any[]) => any>(
+    func: T,
+    limit: number
+  ): (...args: Parameters<T>) => void {
+    let inThrottle: boolean;
+    let lastResult: ReturnType<T>;
+
+    return function (this: any, ...args: Parameters<T>): void {
+      if (!inThrottle) {
+        inThrottle = true;
+        lastResult = func.apply(this, args);
+        setTimeout(() => (inThrottle = false), limit);
+      }
+      return lastResult;
+    };
+  }
+
+  private onDemoScrollUpdate(): void {
+    const now = Date.now();
+
+    if (now - this.lastScrollTime >= this.scrollThrottleDelay) {
+      this.lastScrollTime = now;
+
+      if (typeof ScrollTrigger !== 'undefined') {
+        ScrollTrigger.update();
+      }
     }
   }
 
- 
-  
+  private setupResizeObserver(): void {
+    if (
+      !this.isBrowser ||
+      !this.demoWrapper?.nativeElement ||
+      typeof ResizeObserver === 'undefined'
+    )
+      return;
+
+    let resizeTimeout: any = null;
+
+    const handleResize = (entries: ResizeObserverEntry[]) => {
+      if (resizeTimeout) {
+        clearTimeout(resizeTimeout);
+      }
+
+      resizeTimeout = setTimeout(() => {
+        this.refreshDemoAnimations();
+      }, 150);
+    };
+
+    this.resizeObserver = new ResizeObserver(handleResize);
+    this.resizeObserver.observe(this.demoWrapper.nativeElement);
+
+    if (this.isBrowser) {
+      window.addEventListener('orientationchange', () => {
+        setTimeout(() => this.refreshDemoAnimations(), 300);
+      });
+    }
+  }
+  private refreshDemoAnimations(): void {
+    if (typeof ScrollTrigger !== 'undefined') {
+      this.demoScrollTriggers.forEach((trigger) => {
+        if (trigger && typeof trigger.refresh === 'function') {
+          trigger.refresh();
+        }
+      });
+    }
+  }
+
+  private cleanupDemoAnimations(): void {
+    this.demoScrollTriggers.forEach((trigger) => {
+      if (trigger && typeof trigger.kill === 'function') {
+        trigger.kill();
+      }
+    });
+    this.demoScrollTriggers = [];
+
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
+    }
+  }
 }
