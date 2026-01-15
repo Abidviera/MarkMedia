@@ -1,4 +1,3 @@
-/* === Font Import for Vintage Logo === */
 @font-face {
   font-family: "Veneer";
   src: url("/public/Veneer.woff") format("woff");
@@ -7,7 +6,6 @@
   font-display: swap;
 }
 
-/* === CSS Variables: Global Colors === */
 :root {
   --sienna: #b1560e;
   --sienna-2: #92633a;
@@ -17,7 +15,6 @@
   --papaya-whip: #eae0c7;
 }
 
-/* === Global Reset for Component === */
 :host {
   display: block;
 }
@@ -28,13 +25,7 @@
   box-sizing: border-box;
 }
 
-/* === Body-like Styling for component container === */
-body {
-  margin: 0;
-  font-family: "Inter", sans-serif;
-  background-color: var(--papaya-whip);
-  color: var(--black);
-}
+
 
 /* === Header Bar === */
 header {
@@ -223,7 +214,6 @@ main {
   }
 }
 
-
 @media (max-width: 768px) {
   .desktop-nav {
     display: none;
@@ -309,7 +299,6 @@ main {
   transform: translate(-50%, -50%) rotate(-20deg) scale(100);
   opacity: 0;
   max-width: 150px;
-
 }
 
 /* === Responsive Hero Section === */
@@ -320,7 +309,6 @@ main {
 
   .hero-bottle-wrapper {
     height: 25rem;
-    
   }
 
   .hero-stamp {
@@ -594,7 +582,7 @@ main {
   color: var(--black);
   line-height: 1.6;
 
-  p{
+  p {
     font-size: 1.08rem !important;
   }
 }
@@ -703,7 +691,6 @@ main {
     font-size: 0.8rem;
   }
 }
-
 
 /* === Highlight class for hero text === */
 .highlight {
