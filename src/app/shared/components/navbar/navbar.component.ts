@@ -24,7 +24,7 @@ export class NavbarComponent {
     { label: 'Home', link: '#home' },
     { label: 'About', link: '#about' },
     { label: 'Services', link: '#services' },
-    { label: 'Gallery', link: '#gallery' },
+    { label: 'Gallery', link: '/Completegallery' },
     { label: 'Contact', link: '#contact' },
   ];
 

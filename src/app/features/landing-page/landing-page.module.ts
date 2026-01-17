@@ -12,6 +12,7 @@ import { SharedModule } from '../../shared/shared.module';
 import { TestimonialsComponent } from './components/testimonials/testimonials.component';
 import { GalleryComponent } from './components/gallery/gallery.component';
 import { AboutWithCameraComponent } from './components/about-with-camera/about-with-camera.component';
+import { CompleteGalleryComponent } from './components/complete-gallery/complete-gallery.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { AboutWithCameraComponent } from './components/about-with-camera/about-w
     TestimonialsComponent,
     GalleryComponent,
     AboutWithCameraComponent,
+    CompleteGalleryComponent,
   ],
   imports: [CommonModule, LandingPageRoutingModule, FormsModule, SharedModule],
 })

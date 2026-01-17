@@ -6,6 +6,7 @@ import { ServicesComponent } from './services/services.component';
 import { ProjectsComponent } from './components/projects/projects.component';
 import { TestimonialsComponent } from './components/testimonials/testimonials.component';
 import { GalleryComponent } from './components/gallery/gallery.component';
+import { CompleteGalleryComponent } from './components/complete-gallery/complete-gallery.component';
 
 const routes: Routes = [
    {path: '', component:ContainerComponent },
@@ -14,6 +15,7 @@ const routes: Routes = [
    {path: 'project', component:ProjectsComponent },
    {path: 'test', component:TestimonialsComponent },
    {path: 'gallery', component:GalleryComponent },
+   {path: 'Completegallery', component:CompleteGalleryComponent },
 ];
 
 @NgModule({
