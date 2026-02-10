@@ -373,7 +373,7 @@ export class ContainerComponent {
             duration: 0.05,
             ease: 'none',
           },
-          i * 0.05
+          i * 0.05,
         );
       });
 
@@ -1256,7 +1256,7 @@ export class ContainerComponent {
 
     this.sections.forEach((section, index) => {
       const video = document.getElementById(
-        `background-video-${index}`
+        `background-video-${index}`,
       ) as HTMLVideoElement;
       if (!video) return;
 
@@ -1271,7 +1271,7 @@ export class ContainerComponent {
         this.onAssetLoaded();
 
         const progress = Math.floor(
-          (this.loadedAssets * 100) / this.totalAssetsToLoad
+          (this.loadedAssets * 100) / this.totalAssetsToLoad,
         );
         if (loadingCounter) {
           loadingCounter.textContent = `[${progress
@@ -1290,7 +1290,7 @@ export class ContainerComponent {
 
         if (loadingCounter) {
           const progress = Math.floor(
-            (this.loadedAssets * 100) / this.totalAssetsToLoad
+            (this.loadedAssets * 100) / this.totalAssetsToLoad,
           );
           loadingCounter.textContent = `[${progress
             .toString()
@@ -1339,7 +1339,7 @@ export class ContainerComponent {
           duration: 1.2,
           ease: 'power4.inOut',
         },
-        0
+        0,
       )
       .to(
         '.logo-image',
@@ -1349,7 +1349,7 @@ export class ContainerComponent {
           duration: 1,
           ease: 'power3.out',
         },
-        0.3
+        0.3,
       )
       .to(
         '.glow-effect',
@@ -1359,7 +1359,7 @@ export class ContainerComponent {
           duration: 1.5,
           ease: 'power2.out',
         },
-        0.4
+        0.4,
       );
 
     const chars = document.querySelectorAll('.char');
@@ -1375,7 +1375,7 @@ export class ContainerComponent {
         },
         ease: 'power3.out',
       },
-      0.8
+      0.8,
     );
 
     timeline.to(
@@ -1386,7 +1386,7 @@ export class ContainerComponent {
         duration: 0.8,
         ease: 'power2.out',
       },
-      1.2
+      1.2,
     );
 
     timeline.to(
@@ -1396,7 +1396,7 @@ export class ContainerComponent {
         duration: 0.6,
         ease: 'power2.out',
       },
-      1.4
+      1.4,
     );
 
     timeline.to(
@@ -1406,7 +1406,7 @@ export class ContainerComponent {
         duration: 0.8,
         ease: 'power2.inOut',
       },
-      1.6
+      1.6,
     );
 
     timeline
@@ -1418,7 +1418,7 @@ export class ContainerComponent {
           duration: 0.8,
           ease: 'power3.inOut',
         },
-        2.6
+        2.6,
       )
       .to(
         loadingOverlay,
@@ -1427,7 +1427,7 @@ export class ContainerComponent {
           duration: 0.6,
           ease: 'power2.inOut',
         },
-        2.8
+        2.8,
       );
   }
 
@@ -1467,17 +1467,17 @@ export class ContainerComponent {
     this.soundManager.loadSound(
       'hover',
       'https://assets.codepen.io/7558/click-reverb-001.mp3',
-      1
+      1,
     );
     this.soundManager.loadSound(
       'click',
       'https://assets.codepen.io/7558/shutter-fx-001.mp3',
-      1
+      1,
     );
     this.soundManager.loadSound(
       'textChange',
       'https://assets.codepen.io/7558/whoosh-fx-001.mp3',
-      1
+      1,
     );
   }
 
@@ -1607,17 +1607,19 @@ export class ContainerComponent {
     });
 
     categoryItems.forEach((item, index) => {
-      setTimeout(() => {
-        item.classList.add('loaded');
-      }, index * 60 + 200);
+      setTimeout(
+        () => {
+          item.classList.add('loaded');
+        },
+        index * 60 + 200,
+      );
     });
   }
 
   private setupScrollTriggers(): void {
-    const duration = 0.64;
     const fixedContainer = document.getElementById('fixed-container');
     const fixedSectionElement = document.querySelector(
-      '.fixed-section'
+      '.fixed-section',
     ) as HTMLElement;
     const header = document.querySelector('.header');
     const content = document.querySelector('.content') as HTMLElement;
@@ -1627,6 +1629,7 @@ export class ContainerComponent {
     const featured = document.getElementById('featured');
     const progressFill = document.getElementById('progress-fill');
 
+    // SETUP FEATURED CONTENT SPLITS
     const featuredContents = document.querySelectorAll('.featured-content');
     featuredContents.forEach((content, index) => {
       const h3 = content.querySelector('h3');
@@ -1640,8 +1643,7 @@ export class ContainerComponent {
         split.words.forEach((word: HTMLElement) => {
           const wrapper = document.createElement('div');
           wrapper.className = 'word-mask';
-          wrapper.style.display = 'inline-block';
-          wrapper.style.overflow = 'hidden';
+          wrapper.style.cssText = 'display:inline-block;overflow:hidden;';
           word.parentNode!.insertBefore(wrapper, word);
           wrapper.appendChild(word);
 
@@ -1659,33 +1661,37 @@ export class ContainerComponent {
     const fixedSectionTop = fixedSectionElement.offsetTop;
     const fixedSectionHeight = fixedSectionElement.offsetHeight;
 
+    // Calculate section positions
     for (let i = 0; i < 6; i++) {
       this.sectionPositions.push(
-        fixedSectionTop + (fixedSectionHeight * i) / 6
+        fixedSectionTop + (fixedSectionHeight * i) / 6,
       );
     }
 
+    // CRITICAL: OPTIMIZED MAIN SCROLL TRIGGER
     this.mainScrollTrigger = ScrollTrigger.create({
       trigger: '.fixed-section',
       start: 'top top',
       end: 'bottom bottom',
       pin: '.fixed-container',
       pinSpacing: true,
-      // CRITICAL PERFORMANCE ADDITIONS:
+
+      // PERFORMANCE OPTIMIZATIONS
       anticipatePin: 1,
-      fastScrollEnd: true, // Prevent scroll jumping
-      preventOverlaps: true, // Prevent animation overlaps
-      refreshPriority: 1, // Higher priority refresh
-      onUpdate: (self: any) => {
-        // Throttle updates to prevent too many calculations
+      fastScrollEnd: true,
+      preventOverlaps: true,
+      refreshPriority: 1,
+      invalidateOnRefresh: true,
+
+      // THROTTLED UPDATE
+      onUpdate: this.throttle((self: any) => {
         if (this.isSnapping) return;
 
         const progress = self.progress;
         const progressDelta = progress - this.lastProgress;
 
-        // Only update if there's significant change
-        if (Math.abs(progressDelta) > 0.005) {
-          // Increased threshold
+        // Only update if significant change (reduced checks)
+        if (Math.abs(progressDelta) > 0.008) {
           this.scrollDirection = progressDelta > 0 ? 1 : -1;
         }
 
@@ -1695,41 +1701,56 @@ export class ContainerComponent {
           const nextSection =
             this.currentSection +
             (targetSection > this.currentSection ? 1 : -1);
-          this.snapToSection(nextSection);
+
+          // Use RAF for smooth section change
+          requestAnimationFrame(() => {
+            this.snapToSection(nextSection);
+          });
         }
 
         this.lastProgress = progress;
 
-        // Use RAF for progress bar update
+        // RAF for progress bar
         requestAnimationFrame(() => {
           const sectionProgress = this.currentSection / 5;
-          const progressFill = document.getElementById('progress-fill');
           if (progressFill) {
             progressFill.style.width = `${sectionProgress * 100}%`;
           }
         });
-      },
+      }, 16), // ~60fps throttle
     });
 
+    // OPTIMIZED END SECTION TRIGGER
     ScrollTrigger.create({
       trigger: '.end-section',
       start: 'top center',
       end: 'bottom bottom',
-      onUpdate: (self: any) => {
+
+      // PERFORMANCE
+      fastScrollEnd: true,
+      anticipatePin: 1,
+
+      onUpdate: this.throttle((self: any) => {
         if (self.progress > 0.1) {
-          footer?.classList.add('blur');
-          leftColumn?.classList.add('blur');
-          rightColumn?.classList.add('blur');
-          featured?.classList.add('blur');
+          // Batch DOM updates with RAF
+          requestAnimationFrame(() => {
+            footer?.classList.add('blur');
+            leftColumn?.classList.add('blur');
+            rightColumn?.classList.add('blur');
+            featured?.classList.add('blur');
+          });
 
           const newHeight = Math.max(
             0,
-            100 - ((self.progress - 0.1) / 0.9) * 100
+            100 - ((self.progress - 0.1) / 0.9) * 100,
           );
+
+          // Use GSAP for smooth height transition
           gsap.to(fixedContainer, {
             height: `${newHeight}vh`,
             duration: 0.1,
-            ease: 'power1.out',
+            ease: 'none',
+            overwrite: 'auto',
           });
 
           const isMobile = window.innerWidth <= 768;
@@ -1744,64 +1765,43 @@ export class ContainerComponent {
 
           const moveY = (-(self.progress - 0.1) / 0.9) * moveYMultiplier;
 
-          gsap.to(header, {
+          // Batch GSAP animations
+          gsap.set(header, {
             y: moveY * 1.5,
-            duration: 0.1,
-            ease: 'power1.out',
             force3D: true,
           });
 
-          gsap.to(content, {
+          gsap.set(content, {
             y: moveY,
-            duration: 0.1,
-            ease: 'power1.out',
             force3D: true,
-            clearProps: 'transform',
           });
 
-          gsap.to(footer, {
+          gsap.set(footer, {
             y: moveY * 0.5,
-            duration: 0.1,
-            ease: 'power1.out',
             force3D: true,
           });
         } else {
-          footer?.classList.remove('blur');
-          leftColumn?.classList.remove('blur');
-          rightColumn?.classList.remove('blur');
-          featured?.classList.remove('blur');
+          requestAnimationFrame(() => {
+            footer?.classList.remove('blur');
+            leftColumn?.classList.remove('blur');
+            rightColumn?.classList.remove('blur');
+            featured?.classList.remove('blur');
+          });
 
           gsap.to(fixedContainer, {
             height: '100vh',
             duration: 0.1,
-            ease: 'power1.out',
+            ease: 'none',
           });
 
-          gsap.to(header, {
+          gsap.set([header, content, footer], {
             y: 0,
-            duration: 0.1,
-            ease: 'power1.out',
-            force3D: true,
-            clearProps: 'transform',
-          });
-
-          gsap.to(content, {
-            y: 0,
-            duration: 0.1,
-            ease: 'power1.out',
-            force3D: true,
-            clearProps: 'transform',
-          });
-
-          gsap.to(footer, {
-            y: 0,
-            duration: 0.1,
-            ease: 'power1.out',
             force3D: true,
             clearProps: 'transform',
           });
         }
-      },
+      }, 16),
+
       invalidateOnRefresh: true,
     });
 
@@ -1923,7 +1923,7 @@ export class ContainerComponent {
                         ease: 'elastic.out(1, 0.5)',
                       });
                   },
-                }
+                },
               );
             },
             once: true,
@@ -2028,7 +2028,7 @@ export class ContainerComponent {
 
   private setupHorizontalGalleryScroll(): void {
     const galleryPinWrap = document.querySelector(
-      '.gallery-pin-wrap'
+      '.gallery-pin-wrap',
     ) as HTMLElement;
 
     if (galleryPinWrap) {
@@ -2157,17 +2157,23 @@ export class ContainerComponent {
     const previousSection = this.currentSection;
     this.currentSection = newSection;
 
-    this.updateProgressNumbers();
+    // Immediate progress update
+    requestAnimationFrame(() => {
+      this.updateProgressNumbers();
 
-    const duration = 0.64;
+      const progressFill = document.getElementById('progress-fill');
+      const sectionProgress = this.currentSection / 5;
+      if (progressFill) {
+        progressFill.style.width = `${sectionProgress * 100}%`;
+      }
+    });
+
+    const duration = 0.56; // Reduced from 0.64 for snappier feel
     const parallaxAmount = 5;
-    const progressFill = document.getElementById('progress-fill');
-    const sectionProgress = this.currentSection / 5;
-    if (progressFill) {
-      progressFill.style.width = `${sectionProgress * 100}%`;
-    }
 
     const featuredContents = document.querySelectorAll('.featured-content');
+
+    // Hide non-active sections immediately
     featuredContents.forEach((content, i) => {
       if (i !== newSection && i !== previousSection) {
         content.classList.remove('active');
@@ -2175,15 +2181,16 @@ export class ContainerComponent {
       }
     });
 
+    // ANIMATE OUT PREVIOUS SECTION
     if (previousSection !== null) {
       const prevWords = this.splitTexts[`featured-${previousSection}`]?.words;
       if (prevWords) {
         gsap.to(prevWords, {
           yPercent: isScrollingDown ? -100 : 100,
           opacity: 0,
-          duration: duration * 0.6,
-          stagger: isScrollingDown ? 0.03 : -0.03,
-          ease: 'customEase',
+          duration: duration * 0.5, // Faster exit
+          stagger: isScrollingDown ? 0.02 : -0.02, // Reduced stagger
+          ease: 'power2.in', // Faster ease
           onComplete: () => {
             featuredContents[previousSection].classList.remove('active');
             gsap.set(featuredContents[previousSection], {
@@ -2194,72 +2201,81 @@ export class ContainerComponent {
       }
     }
 
+    // ANIMATE IN NEW SECTION
     const newWords = this.splitTexts[`featured-${newSection}`]?.words;
     if (newWords) {
-      this.soundManager.play('textChange', 250);
+      this.soundManager.play('textChange', 200); // Reduced delay
 
       featuredContents[newSection].classList.add('active');
       gsap.set(featuredContents[newSection], {
         visibility: 'visible',
         opacity: 1,
       });
+
       gsap.set(newWords, {
         yPercent: isScrollingDown ? 100 : -100,
         opacity: 0,
       });
+
       gsap.to(newWords, {
         yPercent: 0,
         opacity: 1,
-        duration: duration,
-        stagger: isScrollingDown ? 0.05 : -0.05,
-        ease: 'customEase',
+        duration: duration * 0.8,
+        stagger: isScrollingDown ? 0.03 : -0.03, // Reduced stagger
+        ease: 'power2.out',
       });
     }
 
-    this.videoElements.forEach((video, i) => {
-      if (i === newSection) {
-        video.play().catch(() => {});
-      } else if (i === previousSection) {
-        setTimeout(() => {
+    // VIDEO MANAGEMENT
+    requestAnimationFrame(() => {
+      this.videoElements.forEach((video, i) => {
+        if (i === newSection) {
+          video.play().catch(() => {});
+        } else if (i === previousSection) {
+          setTimeout(() => video.pause(), duration * 800);
+        } else {
           video.pause();
-        }, duration * 1000);
-      } else {
-        video.pause();
-      }
+        }
+      });
     });
 
+    // OPTIMIZED VIDEO TRANSITIONS
     const videos = document.querySelectorAll('.background-video');
     videos.forEach((vid: any, i) => {
       vid.classList.remove('previous', 'active');
+
       if (i === newSection) {
+        vid.classList.add('active');
+
         if (isScrollingDown) {
           gsap.set(vid, { opacity: 1, y: 0, clipPath: 'inset(100% 0 0 0)' });
           gsap.to(vid, {
             clipPath: 'inset(0% 0 0 0)',
             duration: duration,
-            ease: 'customEase',
+            ease: 'power2.out',
           });
         } else {
           gsap.set(vid, { opacity: 1, y: 0, clipPath: 'inset(0 0 100% 0)' });
           gsap.to(vid, {
             clipPath: 'inset(0 0 0% 0)',
             duration: duration,
-            ease: 'customEase',
+            ease: 'power2.out',
           });
         }
-        vid.classList.add('active');
       } else if (i === previousSection) {
         vid.classList.add('previous');
+
         gsap.to(vid, {
           y: isScrollingDown ? `${parallaxAmount}%` : `-${parallaxAmount}%`,
           duration: duration,
-          ease: 'customEase',
+          ease: 'power2.out',
         });
+
         gsap.to(vid, {
           opacity: 0,
-          delay: duration * 0.5,
-          duration: duration * 0.5,
-          ease: 'customEase',
+          delay: duration * 0.4,
+          duration: duration * 0.4,
+          ease: 'power2.out',
           onComplete: () => {
             vid.classList.remove('previous');
             gsap.set(vid, { y: 0 });
@@ -2269,32 +2285,44 @@ export class ContainerComponent {
       } else {
         gsap.to(vid, {
           opacity: 0,
-          duration: duration * 0.3,
-          ease: 'customEase',
+          duration: duration * 0.2,
+          ease: 'power2.out',
         });
       }
     });
 
-    const services = document.querySelectorAll('.service');
-    services.forEach((service, i) => {
-      if (i === newSection) {
-        service.classList.add('active');
-        gsap.to(service, { opacity: 1, duration: 0.3, ease: 'power2.out' });
-      } else {
-        service.classList.remove('active');
-        gsap.to(service, { opacity: 0.3, duration: 0.3, ease: 'power2.out' });
-      }
-    });
+    // BATCH SERVICE/CATEGORY UPDATES
+    requestAnimationFrame(() => {
+      const services = document.querySelectorAll('.service');
+      const categories = document.querySelectorAll('.category');
 
-    const categories = document.querySelectorAll('.category');
-    categories.forEach((category, i) => {
-      if (i === newSection) {
-        category.classList.add('active');
-        gsap.to(category, { opacity: 1, duration: 0.3, ease: 'power2.out' });
-      } else {
-        category.classList.remove('active');
-        gsap.to(category, { opacity: 0.3, duration: 0.3, ease: 'power2.out' });
-      }
+      services.forEach((service, i) => {
+        if (i === newSection) {
+          service.classList.add('active');
+          gsap.to(service, { opacity: 1, duration: 0.25, ease: 'power2.out' });
+        } else {
+          service.classList.remove('active');
+          gsap.to(service, {
+            opacity: 0.3,
+            duration: 0.25,
+            ease: 'power2.out',
+          });
+        }
+      });
+
+      categories.forEach((category, i) => {
+        if (i === newSection) {
+          category.classList.add('active');
+          gsap.to(category, { opacity: 1, duration: 0.25, ease: 'power2.out' });
+        } else {
+          category.classList.remove('active');
+          gsap.to(category, {
+            opacity: 0.3,
+            duration: 0.25,
+            ease: 'power2.out',
+          });
+        }
+      });
     });
   }
 
@@ -2322,7 +2350,7 @@ export class ContainerComponent {
 
   private distributeImagesIntoGalleries(): void {
     const optimizedImages = this.galleryImages.map((url) =>
-      url.includes('?') ? url : `${url}?auto=compress&w=800`
+      url.includes('?') ? url : `${url}?auto=compress&w=800`,
     );
     const shuffledImages = [...optimizedImages].sort(() => Math.random() - 0.5);
 
@@ -2336,7 +2364,7 @@ export class ContainerComponent {
       const startIndex = i * imagesPerSection;
       const endIndex = Math.min(
         startIndex + imagesPerSection,
-        shuffledImages.length
+        shuffledImages.length,
       );
       const sectionImages = shuffledImages.slice(startIndex, endIndex);
 
@@ -2378,7 +2406,7 @@ export class ContainerComponent {
 
     this.loadedAssets++;
     this.loadProgress = Math.round(
-      (this.loadedAssets * 100) / this.totalAssetsToLoad
+      (this.loadedAssets * 100) / this.totalAssetsToLoad,
     );
 
     const progressBar = document.querySelector('.progress-bar');
@@ -2479,7 +2507,7 @@ export class ContainerComponent {
             fastScrollEnd: true,
             markers: false,
           },
-        }
+        },
       );
 
       this.demoScrollTriggers.push(animation.scrollTrigger);
@@ -2579,7 +2607,7 @@ export class ContainerComponent {
             start: 'top bottom',
             end: 'bottom top',
           },
-        }
+        },
       );
 
       const trigger = ScrollTrigger.getById(animation.scrollTrigger?.id);
@@ -2589,20 +2617,19 @@ export class ContainerComponent {
     });
   }
 
-  private throttle<T extends (...args: any[]) => any>(
+  private throttle<T extends (...args: any[]) => void>(
     func: T,
-    limit: number
+    limit: number,
   ): (...args: Parameters<T>) => void {
     let inThrottle: boolean;
-    let lastResult: ReturnType<T>;
+    let lastResult: any;
 
-    return function (this: any, ...args: Parameters<T>): void {
+    return (...args: Parameters<T>): void => {
       if (!inThrottle) {
         inThrottle = true;
         lastResult = func.apply(this, args);
         setTimeout(() => (inThrottle = false), limit);
       }
-      return lastResult;
     };
   }
 

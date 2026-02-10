@@ -14,8 +14,7 @@ const routes: Routes = [
    {path: 's', component:ServicesComponent },
    {path: 'project', component:ProjectsComponent },
    {path: 'test', component:TestimonialsComponent },
-   {path: 'gallery', component:GalleryComponent },
-   {path: 'Completegallery', component:CompleteGalleryComponent },
+   {path: 'gallery', component:CompleteGalleryComponent },
 ];
 
 @NgModule({
