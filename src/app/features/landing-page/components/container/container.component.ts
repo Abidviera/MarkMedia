@@ -9,7 +9,18 @@ import {
   ViewChild,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import Lenis, { LenisOptions } from 'lenis';
+
+// REMOVE THIS LINE COMPLETELY:
+// import Lenis, { LenisOptions } from 'lenis';
+
+// Define the interface locally instead
+interface LenisInstance {
+  raf: (time: number) => void;
+  on: (event: string, callback: () => void) => void;
+  scrollTo: (target: number, options?: any) => void;
+  destroy: () => void;
+}
+
 interface GalleryImage {
   src: string;
   width: number;
@@ -78,7 +89,7 @@ export class ContainerComponent {
   private lastScrollTime = 0;
   private scrollThrottleDelay = 16;
 
-  private lenis: Lenis | null = null;
+  private lenis: LenisInstance | null = null;
   private soundManager: any;
   private splitTexts: { [key: string]: SplitTextInstance } = {};
   private currentSection = 0;
@@ -1157,24 +1168,24 @@ export class ContainerComponent {
       document.body.style.overflow = 'hidden';
     }
   }
+ngAfterViewInit(): void {
+  if (!this.isBrowser) return;
 
-  ngAfterViewInit(): void {
-    if (!this.isBrowser) return;
-
-    setTimeout(() => {
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(() => {
-          this.preloadVideos();
-          this.optimizeGalleryImages();
-          this.setupPerformanceOptimizations();
-        });
-      } else {
+  // Use setTimeout to ensure DOM is fully ready
+  setTimeout(() => {
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
         this.preloadVideos();
         this.optimizeGalleryImages();
         this.setupPerformanceOptimizations();
-      }
-    }, 500);
-  }
+      });
+    } else {
+      this.preloadVideos();
+      this.optimizeGalleryImages();
+      this.setupPerformanceOptimizations();
+    }
+  }, 100);
+}
 
   ngOnDestroy(): void {
     if (!this.isBrowser) return;
@@ -1314,23 +1325,28 @@ export class ContainerComponent {
 
   private hideLoadingScreen(): void {
     const loadingOverlay = document.getElementById('loading-overlay');
-    if (!loadingOverlay) return;
+  if (!loadingOverlay) return;
 
-    const timeline = gsap.timeline({
-      onComplete: () => {
-        loadingOverlay.style.display = 'none';
-        this.isLoaded = true;
-        document.body.style.overflow = 'auto';
-        document.documentElement.scrollTo(0, 0);
+  const timeline = gsap.timeline({
+    onComplete: () => {
+      loadingOverlay.style.display = 'none';
+      this.isLoaded = true;
+      document.body.style.overflow = 'auto';
+      document.documentElement.scrollTo(0, 0);
 
-        this.initLenis();
+      // Initialize Lenis AFTER loading screen is hidden
+      this.initLenis();
+      
+      // Small delay before initializing page
+      setTimeout(() => {
         this.initPage();
+      }, 100);
 
-        setTimeout(() => {
-          this.initScrollAnimations();
-        }, 600);
-      },
-    });
+      setTimeout(() => {
+        this.initScrollAnimations();
+      }, 600);
+    },
+  });
     timeline
       .to(
         '.logo-mask',
@@ -1481,61 +1497,95 @@ export class ContainerComponent {
     );
   }
 
-  private initLenis(): void {
-    if (!this.isBrowser) return;
+private initLenis(): void {
+  if (!this.isBrowser) {
+    console.log('Lenis: Not in browser, skipping initialization');
+    return;
+  }
 
-    try {
-      const lenisOptions: any = {
-        duration: 1.2, // Reduced from 1.8 for smoother response
+  // Additional check for window
+  if (typeof window === 'undefined') {
+    console.log('Lenis: window undefined, skipping initialization');
+    return;
+  }
+
+  // Wait for document to be ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => this.initLenis());
+    return;
+  }
+
+  // Dynamic import wrapped in setTimeout to ensure it runs after SSR
+  setTimeout(() => {
+    import('lenis').then((LenisModule) => {
+      const Lenis = LenisModule.default;
+      
+      const lenisOptions = {
+        duration: 1.2,
         easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        orientation: 'vertical',
-        gestureOrientation: 'vertical',
+        orientation: 'vertical' as const,
+        gestureOrientation: 'vertical' as const,
         smoothWheel: true,
-        wheelMultiplier: 1, // Increased from 0.8 for better control
-        touchMultiplier: 2, // Increased from 1.5
+        wheelMultiplier: 1,
+        touchMultiplier: 2,
         infinite: false,
         smooth: true,
-        direction: 'vertical',
-        // CRITICAL ADDITIONS:
-        syncTouch: true, // Sync touch events
-        syncTouchLerp: 0.1, // Smooth touch lerp
-        touchInertiaMultiplier: 35, // Better touch inertia
+        direction: 'vertical' as const,
+        syncTouch: true,
+        syncTouchLerp: 0.1,
+        touchInertiaMultiplier: 35,
       };
 
-      this.lenis = new Lenis(lenisOptions);
+      try {
+        this.lenis = new Lenis(lenisOptions) as LenisInstance;
 
-      if (this.lenis) {
-        // Use RAF for smoother updates
-        const raf = (time: number) => {
-          if (this.lenis) {
-            this.lenis.raf(time);
-          }
+        if (this.lenis) {
+          console.log('Lenis initialized successfully');
+          
+          const raf = (time: number) => {
+            if (this.lenis) {
+              this.lenis.raf(time);
+            }
+            requestAnimationFrame(raf);
+          };
           requestAnimationFrame(raf);
-        };
-        requestAnimationFrame(raf);
 
-        // CRITICAL: Debounced scroll update
-        this.lenis.on('scroll', ScrollTrigger.update);
+          // Connect to ScrollTrigger
+          if (typeof ScrollTrigger !== 'undefined') {
+            this.lenis.on('scroll', ScrollTrigger.update);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to create Lenis instance:', error);
+        this.setupNativeScrollingFallback();
       }
-    } catch (error) {
-      console.error('Failed to initialize Lenis:', error);
-    }
-  }
+    }).catch(error => {
+      console.error('Failed to load Lenis module:', error);
+      this.setupNativeScrollingFallback();
+    });
+  }, 0);
+}
 
   private setupNativeScrollingFallback(): void {
     console.warn('Lenis failed, using native scrolling');
   }
-
+private isBrowserReady(): boolean {
+  return this.isBrowser && typeof window !== 'undefined' && typeof document !== 'undefined';
+}
   private initPage(): void {
-    if (
-      typeof gsap === 'undefined' ||
-      typeof ScrollTrigger === 'undefined' ||
-      typeof SplitText === 'undefined'
-    ) {
-      console.error('GSAP libraries not loaded');
-      return;
-    }
+    if (!this.isBrowserReady()) {
+    console.log('Page init: Browser not ready');
+    return;
+  }
 
+  if (
+    typeof gsap === 'undefined' ||
+    typeof ScrollTrigger === 'undefined' ||
+    typeof SplitText === 'undefined'
+  ) {
+    console.error('GSAP libraries not loaded');
+    return;
+  }
     gsap.registerPlugin(ScrollTrigger, SplitText);
 
     gsap.registerEase('customEase', function (t: number) {
